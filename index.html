@@ -3,8 +3,14 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz da Família TV</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Quiz da Família</title>
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6c5ce7">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2821/2821637.png">
 
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
@@ -12,8 +18,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap" rel="stylesheet">
     <style>
         /* --- VARIÁVEIS DE TEMA --- */
-
-        /* TEMA 1: ALEGRIA (Padrão) */
         :root {
             --bg-grad: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
             --glass: rgba(245, 247, 250, 0.90);
@@ -21,17 +25,12 @@
             --card-back-bg: #e3f2fd;
             --text-main: #2d3436;
             --primary: #6c5ce7;
-            /* Cor Errou/Winner */
             --secondary: #00cec9;
-            /* Cor Acertou */
             --partial: #fbc531;
-            /* Cor Parcial (Amarelo) */
             --btn-text: #fff;
             --focus-outline: 4px solid #ffeaa7;
             --card-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
             --progress-bg: rgba(0, 0, 0, 0.1);
-
-            /* Correção de Legibilidade dos Players */
             --chip-bg: rgba(255, 255, 255, 0.9);
             --chip-text: #2d3436;
         }
@@ -46,12 +45,11 @@
             --primary: #d35400;
             --secondary: #388e3c;
             --partial: #f39c12;
-
             --chip-bg: #fff;
             --chip-text: #1b5e20;
         }
 
-        /* TEMA 3: CYBERPUNK (Correção de Contraste aplicada) */
+        /* TEMA 3: CYBERPUNK */
         [data-theme="cyber"] {
             --bg-grad: linear-gradient(135deg, #2d3436, #000000);
             --glass: rgba(45, 52, 54, 0.95);
@@ -63,8 +61,6 @@
             --partial: #f1c40f;
             --progress-bg: rgba(255, 255, 255, 0.1);
             --focus-outline: 4px solid #00cec9;
-
-            /* Players agora têm fundo escuro e texto claro */
             --chip-bg: #1e272e;
             --chip-text: #f5f6fa;
         }
@@ -79,7 +75,6 @@
             --primary: #ff6b6b;
             --secondary: #0277bd;
             --partial: #feca57;
-
             --chip-bg: #fff;
             --chip-text: #013655;
         }
@@ -98,7 +93,6 @@
             --focus-outline: 4px solid #fff;
             --progress-bg: #333;
             border: 2px solid #333;
-
             --chip-bg: #000;
             --chip-text: #fff;
         }
@@ -113,7 +107,6 @@
             --primary: #c0392b;
             --secondary: #8e44ad;
             --partial: #e67e22;
-
             --chip-bg: #fff;
             --chip-text: #5d2e46;
         }
@@ -128,25 +121,29 @@
             --primary: #d84315;
             --secondary: #795548;
             --partial: #fb8c00;
-
             --chip-bg: #fff;
             --chip-text: #4e342e;
         }
 
-        /* --- CSS GERAL --- */
+        /* --- CSS BASE --- */
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         body {
             font-family: 'Quicksand', sans-serif;
             background: var(--bg-grad);
             background-attachment: fixed;
             color: var(--text-main);
             margin: 0;
-            padding: 20px;
-            height: 100vh;
+            padding: 10px;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            box-sizing: border-box;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
             transition: background 0.5s ease;
         }
 
@@ -157,33 +154,36 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding: 0 10px;
-            box-sizing: border-box;
+            margin-bottom: 15px;
+            padding: 0 5px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .main-title {
             margin: 0;
-            font-size: 2rem;
+            font-size: 1.5rem;
             color: var(--primary);
             text-transform: uppercase;
             font-weight: 900;
             text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.05);
         }
 
-        /* BARRA DE TEMAS */
         .theme-bar {
             display: flex;
             gap: 8px;
             background: rgba(255, 255, 255, 0.4);
-            padding: 8px 15px;
+            padding: 5px 10px;
             border-radius: 50px;
             backdrop-filter: blur(5px);
+            overflow-x: auto;
+            max-width: 100%;
         }
 
         .dot {
-            width: 30px;
-            height: 30px;
+            width: 25px;
+            height: 25px;
+            flex-shrink: 0;
             border-radius: 50%;
             border: 2px solid rgba(255, 255, 255, 0.8);
             cursor: pointer;
@@ -191,24 +191,24 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
-        /* --- CONTAINER PRINCIPAL --- */
+        /* --- CONTAINER --- */
         .app-container {
             width: 100%;
-            height: 100%;
+            min-height: 80vh;
             max-width: 1200px;
             background: var(--glass);
-            border-radius: 30px;
+            border-radius: 20px;
             box-shadow: var(--card-shadow);
-            padding: 30px;
-            box-sizing: border-box;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             position: relative;
             transition: background 0.3s ease;
+            margin-bottom: 20px;
         }
 
-        /* --- FOCO DO CONTROLE REMOTO --- */
+        /* --- ELEMENTOS GERAIS --- */
         :focus {
             outline: none;
         }
@@ -218,19 +218,14 @@
         .scene:focus,
         .dot:focus {
             outline: var(--focus-outline);
-            transform: scale(1.1);
+            transform: scale(1.05);
             z-index: 500;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
         }
 
-        .scene:focus .card {
-            border: 4px solid var(--secondary);
-        }
-
-        /* --- TELAS --- */
         .screen {
             width: 100%;
-            height: 100%;
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -245,9 +240,10 @@
         }
 
         .status-msg {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             margin: 15px 0;
             font-weight: bold;
+            text-align: center;
         }
 
         .error {
@@ -258,38 +254,37 @@
             color: #00b894;
         }
 
-        /* Inputs */
         .input-group {
             background: rgba(0, 0, 0, 0.05);
-            padding: 25px;
-            border-radius: 20px;
-            width: 70%;
+            padding: 20px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 500px;
             text-align: center;
         }
 
         input[type="text"] {
-            font-size: 1.4rem;
-            padding: 12px;
+            font-size: 1.2rem;
+            padding: 10px;
             border-radius: 10px;
             border: 2px solid #ccc;
-            width: 50%;
+            width: 60%;
             background: rgba(255, 255, 255, 0.9);
             color: #333;
-            /* Texto do input sempre escuro para ler */
         }
 
-        /* Botões */
         .btn {
-            padding: 12px 30px;
-            font-size: 1.3rem;
+            padding: 10px 20px;
+            font-size: 1rem;
             border-radius: 50px;
             border: none;
             cursor: pointer;
             font-weight: bold;
             color: var(--btn-text);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             transition: 0.2s;
             margin: 5px;
+            text-transform: uppercase;
         }
 
         .btn-add {
@@ -299,82 +294,83 @@
 
         .btn-start {
             background: var(--secondary);
-            width: 60%;
-            font-size: 1.8rem;
+            width: 80%;
+            font-size: 1.5rem;
             margin-top: 20px;
+            padding: 15px;
         }
 
-        /* Botões de Ação */
         .btn-wrong {
             background: var(--primary);
-            min-width: 140px;
+            flex: 1;
+            min-width: 80px;
         }
 
         .btn-partial {
             background: var(--partial);
-            min-width: 140px;
+            flex: 1;
             color: #fff;
+            min-width: 80px;
         }
 
         .btn-correct {
             background: var(--secondary);
-            min-width: 140px;
+            flex: 1;
+            min-width: 80px;
         }
 
         #player-list {
             margin-top: 15px;
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
             justify-content: center;
         }
 
         .p-tag {
-            font-size: 1.1rem;
+            font-size: 1rem;
             background: rgba(255, 255, 255, 0.8);
-            padding: 8px 15px;
-            border-radius: 20px;
+            padding: 5px 12px;
+            border-radius: 15px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-            color: #333;
         }
 
-        /* Placar (Chip) */
         .scoreboard {
             display: flex;
-            gap: 15px;
-            padding: 8px 20px;
+            gap: 10px;
+            padding: 5px 15px;
             background: rgba(0, 0, 0, 0.05);
             border-radius: 50px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .chip {
-            padding: 8px 20px;
-            font-size: 1.2rem;
+            padding: 5px 15px;
+            font-size: 1rem;
             background: var(--chip-bg);
-            /* Cor de fundo adaptável */
-            border-radius: 30px;
-            border: 3px solid transparent;
+            border-radius: 20px;
+            border: 2px solid transparent;
             color: var(--chip-text);
-            /* Cor de texto adaptável */
             transition: all 0.3s;
         }
 
         .chip.active {
             border-color: var(--primary);
-            transform: scale(1.1);
+            transform: scale(1.05);
             font-weight: bold;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
         }
 
-        /* CARTÃO 3D */
         .scene {
             perspective: 1000px;
-            width: 90%;
+            width: 100%;
             flex-grow: 1;
             margin: 10px 0;
+            min-height: 250px;
             cursor: pointer;
-            border-radius: 25px;
+            border-radius: 20px;
         }
 
         .card {
@@ -383,7 +379,7 @@
             position: relative;
             transition: transform 0.6s;
             transform-style: preserve-3d;
-            border-radius: 25px;
+            border-radius: 20px;
         }
 
         .card.flipped {
@@ -395,44 +391,45 @@
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
-            border-radius: 25px;
+            border-radius: 20px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 40px;
+            padding: 20px;
             box-sizing: border-box;
             text-align: center;
             background: var(--card-bg);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
             color: var(--text-main);
+            overflow-y: auto;
         }
 
         .back {
             transform: rotateY(180deg);
             background: var(--card-back-bg);
-            border: 4px solid var(--secondary);
+            border: 3px solid var(--secondary);
         }
 
         .front {
-            border-bottom: 8px solid rgba(0, 0, 0, 0.1);
+            border-bottom: 6px solid rgba(0, 0, 0, 0.1);
         }
 
         .big-text {
-            font-size: 2.2rem;
-            line-height: 1.3;
+            font-size: 1.5rem;
+            line-height: 1.4;
             font-weight: 600;
+            word-wrap: break-word;
         }
 
         .label {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             opacity: 0.7;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
-        /* Footer */
         .footer-controls {
             width: 100%;
             text-align: center;
@@ -442,14 +439,15 @@
         .controls {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 10px;
             margin-bottom: 15px;
-            min-height: 60px;
+            width: 100%;
+            flex-wrap: wrap;
         }
 
         .progress-track {
             width: 100%;
-            height: 10px;
+            height: 8px;
             background: var(--progress-bg);
             border-radius: 10px;
             overflow: hidden;
@@ -464,13 +462,145 @@
         }
 
         .progress-text {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-weight: bold;
             opacity: 0.7;
         }
 
         .hidden {
             display: none !important;
+        }
+
+        /* --- INSTALL BANNER (PWA) --- */
+        #installBanner {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border: 2px solid var(--primary);
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                bottom: -100px;
+                opacity: 0;
+            }
+
+            to {
+                bottom: 20px;
+                opacity: 1;
+            }
+        }
+
+        .install-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .install-desc {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .install-btn {
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .close-install {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            cursor: pointer;
+            color: #999;
+            font-weight: bold;
+        }
+
+        /* --- MEDIA QUERIES --- */
+        @media (min-width: 768px) {
+            body {
+                padding: 20px;
+                height: 100vh;
+                overflow: hidden;
+                justify-content: center;
+            }
+
+            .app-container {
+                height: 90vh;
+                padding: 40px;
+                border-radius: 30px;
+            }
+
+            .main-title {
+                font-size: 2.5rem;
+            }
+
+            .dot {
+                width: 35px;
+                height: 35px;
+            }
+
+            .big-text {
+                font-size: 2.2rem;
+            }
+
+            .btn {
+                font-size: 1.3rem;
+                padding: 12px 30px;
+            }
+
+            .controls {
+                gap: 20px;
+            }
+
+            .input-group {
+                padding: 30px;
+            }
+
+            .face {
+                padding: 40px;
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .app-container {
+                max-width: 1400px;
+            }
+
+            .big-text {
+                font-size: 3rem;
+            }
+
+            .btn {
+                font-size: 1.5rem;
+                padding: 15px 40px;
+            }
+
+            .scene {
+                margin: 20px 0;
+            }
         }
     </style>
 </head>
@@ -500,7 +630,7 @@
             <div id="player-setup" class="hidden"
                 style="width: 100%; display:flex; flex-direction:column; align-items:center;">
                 <div class="input-group">
-                    <label style="display:block; font-size:1.3rem; margin-bottom:10px;">Jogadores</label>
+                    <label style="display:block; font-size:1.1rem; margin-bottom:10px;">Jogadores</label>
                     <input type="text" id="pName" placeholder="Nome" onkeydown="if(event.key==='Enter') addPlayer()">
                     <button class="btn btn-add" onclick="addPlayer()">ADD</button>
                     <div id="player-list"></div>
@@ -519,7 +649,8 @@
                     <div class="face front">
                         <span class="label">PERGUNTA</span>
                         <div class="big-text" id="qText">...</div>
-                        <div style="font-size:0.8rem; margin-top:20px; opacity:0.5">(OK para ver a resposta)</div>
+                        <div style="font-size:0.8rem; margin-top:15px; opacity:0.5; font-style: italic;">(Toque/OK para
+                            ver a resposta)</div>
                     </div>
                     <div class="face back">
                         <span class="label" style="color:var(--primary)">RESPOSTA</span>
@@ -539,37 +670,87 @@
                     <div class="progress-fill" id="progressBar"></div>
                 </div>
                 <div class="progress-text">
-                    Faltam <span id="remainingCount">0</span> perguntas
+                    Restam <span id="remainingCount">0</span>
                 </div>
             </div>
         </div>
 
         <div id="end" class="hidden screen setup-screen">
-            <h1 style="font-size:3rem">VENCEDOR! 🏆</h1>
-            <h2 id="winner" style="font-size:2.5rem; color:var(--primary); margin:10px;"></h2>
-
+            <h1 style="font-size:2.5rem">VENCEDOR! 🏆</h1>
+            <h2 id="winner" style="font-size:2rem; color:var(--primary); margin:10px;"></h2>
             <div id="ranking"
-                style="background:rgba(0,0,0,0.05); padding:20px; border-radius:15px; width:60%; margin:20px 0;"></div>
-
+                style="background:rgba(0,0,0,0.05); padding:15px; border-radius:15px; width:90%; max-width:500px; margin:20px 0;">
+            </div>
             <button class="btn btn-start" onclick="location.reload()">NOVO JOGO</button>
         </div>
     </div>
 
+    <div id="installBanner" class="hidden">
+        <div class="close-install" onclick="closeInstall()">x</div>
+        <div class="install-title">Instalar Aplicativo 📲</div>
+        <div class="install-desc" id="installDesc">Instale para jogar offline e em tela cheia!</div>
+        <button class="install-btn" onclick="installApp()">INSTALAR</button>
+    </div>
+
     <script>
-        // --- TEMAS ---
+        // --- PWA LOGIC ---
+        let deferredPrompt;
+        const installBanner = document.getElementById('installBanner');
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW falhou:', err));
+        }
+
+        // Logic for Install Banner
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            if (!isStandalone) showInstallBanner();
+        });
+
+        // iOS Logic
+        if (isIOS && !isStandalone) {
+            document.getElementById('installDesc').innerText = "Toque em 'Compartilhar' e depois em 'Adicionar à Tela de Início' para instalar.";
+            document.querySelector('.install-btn').style.display = 'none'; // iOS não tem botão automático
+            showInstallBanner();
+        }
+
+        function showInstallBanner() {
+            setTimeout(() => installBanner.classList.remove('hidden'), 2000);
+        }
+
+        function closeInstall() {
+            installBanner.classList.add('hidden');
+        }
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        installBanner.classList.add('hidden');
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
+
+        // --- THEME LOGIC ---
         function setTheme(t) {
             if (t) document.body.setAttribute('data-theme', t);
             else document.body.removeAttribute('data-theme');
         }
 
-        // --- ESTADO ---
+        // --- GAME STATE ---
         let deck = [];
         let players = [];
         let turn = 0;
         let isFlipped = false;
         let totalStart = 0;
 
-        // --- INICIALIZAÇÃO ---
         window.onload = async function () {
             const msg = document.getElementById('loading-msg');
             try {
@@ -680,7 +861,6 @@
             if (isFlipped) {
                 card.classList.add('flipped');
                 document.getElementById('actions').classList.remove('hidden');
-                // Foca no botão ACERTOU por padrão
                 setTimeout(() => document.querySelector('.btn-correct').focus(), 300);
             } else {
                 card.classList.remove('flipped');
@@ -696,9 +876,8 @@
             }
         }
 
-        // Lógica de Pontuação Atualizada (Float)
         function next(points) {
-            players[turn].score += points; // Soma 0, 0.5 ou 1
+            players[turn].score += points;
             turn = (turn + 1) % players.length;
             deck.shift();
             loadCard();
@@ -713,7 +892,7 @@
             document.getElementById('winner').innerText = players[0].name;
 
             document.getElementById('ranking').innerHTML = players.map((p, i) => `
-                <div style="display:flex; justify-content:space-between; font-size:1.5rem; border-bottom:1px solid #ccc; padding:5px;">
+                <div style="display:flex; justify-content:space-between; font-size:1.2rem; border-bottom:1px solid #ccc; padding:5px;">
                     <span>${i + 1}º ${p.name}</span>
                     <b>${p.score}</b>
                 </div>
