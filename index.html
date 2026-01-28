@@ -5,64 +5,99 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz da Família TV</title>
+
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
+
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap" rel="stylesheet">
     <style>
-        /* --- VARIÁVEIS DE TEMA (Padrão: Alegria) --- */
+        /* --- VARIÁVEIS DE TEMA --- */
+
+        /* TEMA 1: ALEGRIA (Suavizado - Gelo/Azul Bebê) */
         :root {
-            --bg-grad: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
-            --glass: rgba(255, 255, 255, 0.95);
+            --bg-grad: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            --glass: rgba(245, 247, 250, 0.90);
+            --card-bg: #fdfbf7;
+            --card-back-bg: #e3f2fd;
             --text-main: #2d3436;
             --primary: #6c5ce7;
             --secondary: #00cec9;
             --btn-text: #fff;
             --focus-outline: 4px solid #ffeaa7;
-            --focus-glow: 0 0 15px #ffeaa7;
-            --card-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            --card-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
             --progress-bg: rgba(0, 0, 0, 0.1);
         }
 
-        /* TEMA 2: JUNGLE */
+        /* TEMA 2: JUNGLE (Verde Menta/Musgo) */
         [data-theme="jungle"] {
-            --bg-grad: linear-gradient(to bottom, #11998e, #38ef7d);
-            --glass: rgba(255, 253, 231, 0.98);
+            --bg-grad: linear-gradient(to bottom, #134e5e, #71b280);
+            --glass: rgba(241, 248, 233, 0.95);
+            --card-bg: #f1f8e9;
+            --card-back-bg: #dcedc8;
             --text-main: #1b5e20;
             --primary: #d35400;
-            --secondary: #27ae60;
-            --focus-outline: 4px solid #ff9f43;
+            --secondary: #388e3c;
         }
 
-        /* TEMA 3: CYBERPUNK */
+        /* TEMA 3: CYBERPUNK (Modo Escuro Suave) */
         [data-theme="cyber"] {
             --bg-grad: linear-gradient(135deg, #2d3436, #000000);
             --glass: rgba(45, 52, 54, 0.95);
-            --text-main: #dfe6e9;
+            --card-bg: #353b48;
+            --card-back-bg: #2f3640;
+            --text-main: #dcdde1;
             --primary: #e056fd;
-            --secondary: #0984e3;
-            --progress-bg: rgba(255, 255, 255, 0.2);
+            --secondary: #00a8ff;
+            --progress-bg: rgba(255, 255, 255, 0.1);
             --focus-outline: 4px solid #00cec9;
-            --focus-glow: 0 0 20px #00cec9;
         }
 
-        /* TEMA 4: OCEANO */
+        /* TEMA 4: OCEANO (Azul Profundo e Cinza Azulado) */
         [data-theme="ocean"] {
             --bg-grad: linear-gradient(to top, #09203f 0%, #537895 100%);
-            --glass: rgba(240, 248, 255, 0.95);
-            --text-main: #0c2461;
-            --primary: #eb3b5a;
-            --secondary: #1e3799;
+            --glass: rgba(227, 242, 253, 0.95);
+            --card-bg: #e1f5fe;
+            --card-back-bg: #b3e5fc;
+            --text-main: #013655;
+            --primary: #ff6b6b;
+            --secondary: #0277bd;
         }
 
-        /* TEMA 5: ALTO CONTRASTE */
+        /* TEMA 5: ALTO CONTRASTE (Dark Mode OLED) */
         [data-theme="contrast"] {
             --bg-grad: #000000;
-            --glass: #000000;
-            --text-main: #ffffff;
-            --primary: #ff0000;
-            --secondary: #ffff00;
+            --glass: #121212;
+            --card-bg: #1e1e1e;
+            --card-back-bg: #000000;
+            --text-main: #e0e0e0;
+            --primary: #ff4757;
+            --secondary: #ffa502;
             --btn-text: #000;
             --focus-outline: 4px solid #fff;
             --progress-bg: #333;
-            border: 2px solid white;
+            border: 2px solid #333;
+        }
+
+        /* TEMA 6: CREPÚSCULO (Lavanda/Pêssego) */
+        [data-theme="sunset"] {
+            --bg-grad: linear-gradient(to right, #ff9966, #ff5e62);
+            --glass: rgba(255, 240, 245, 0.95);
+            --card-bg: #fff0f5;
+            --card-back-bg: #ffe4e1;
+            --text-main: #5d2e46;
+            --primary: #8e44ad;
+            --secondary: #d35400;
+        }
+
+        /* TEMA 7: CAFÉ / LEITURA (Sépia) */
+        [data-theme="coffee"] {
+            --bg-grad: linear-gradient(to right, #603813, #b29f94);
+            --glass: rgba(253, 246, 227, 0.98);
+            --card-bg: #fff8e1;
+            --card-back-bg: #ffecb3;
+            --text-main: #4e342e;
+            --primary: #795548;
+            --secondary: #d84315;
         }
 
         /* --- CSS GERAL --- */
@@ -82,7 +117,7 @@
             transition: background 0.5s ease;
         }
 
-        /* --- HEADER (Título + Temas) --- */
+        /* --- HEADER --- */
         header {
             width: 100%;
             max-width: 1200px;
@@ -90,7 +125,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            padding: 0 20px;
+            padding: 0 10px;
             box-sizing: border-box;
         }
 
@@ -103,23 +138,24 @@
             text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.05);
         }
 
+        /* BARRA DE TEMAS */
         .theme-bar {
             display: flex;
-            gap: 10px;
-            background: rgba(255, 255, 255, 0.3);
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.4);
             padding: 8px 15px;
             border-radius: 50px;
             backdrop-filter: blur(5px);
         }
 
         .dot {
-            width: 35px;
-            height: 35px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
-            border: 3px solid white;
+            border: 2px solid rgba(255, 255, 255, 0.8);
             cursor: pointer;
             transition: transform 0.2s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         /* --- CONTAINER PRINCIPAL --- */
@@ -142,24 +178,20 @@
         /* --- FOCO DO CONTROLE REMOTO --- */
         :focus {
             outline: none;
-            /* Remove padrão feio do browser */
         }
 
-        /* Aplica estilo de foco customizado para elementos navegáveis */
         button:focus,
         input:focus,
         .scene:focus,
         .dot:focus {
             outline: var(--focus-outline);
-            box-shadow: var(--focus-glow, none);
-            transform: scale(1.05);
+            transform: scale(1.1);
             z-index: 500;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
         }
 
-        /* Foco específico no cartão */
         .scene:focus .card {
             border: 4px solid var(--secondary);
-            /* Borda extra para indicar foco no card */
         }
 
         /* --- TELAS --- */
@@ -208,6 +240,7 @@
             border-radius: 10px;
             border: 2px solid #ccc;
             width: 50%;
+            background: rgba(255, 255, 255, 0.9);
         }
 
         /* Botões */
@@ -219,13 +252,14 @@
             cursor: pointer;
             font-weight: bold;
             color: var(--btn-text);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             transition: 0.2s;
             margin: 5px;
         }
 
         .btn-add {
             background: var(--text-main);
+            color: #fff;
         }
 
         .btn-start {
@@ -255,11 +289,10 @@
 
         .p-tag {
             font-size: 1.1rem;
-            background: #fff;
+            background: rgba(255, 255, 255, 0.8);
             padding: 8px 15px;
             border-radius: 20px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            color: #333;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
 
         /* Placar */
@@ -275,19 +308,20 @@
         .chip {
             padding: 8px 20px;
             font-size: 1.2rem;
-            background: #fff;
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 30px;
-            border: 4px solid transparent;
-            color: #333;
+            border: 3px solid transparent;
+            color: var(--text-main);
         }
 
         .chip.active {
             border-color: var(--primary);
             transform: scale(1.1);
             font-weight: bold;
+            background: #fff;
         }
 
-        /* CARTÃO 3D (Focusable via tabindex) */
+        /* CARTÃO 3D */
         .scene {
             perspective: 1000px;
             width: 90%;
@@ -295,7 +329,6 @@
             margin: 10px 0;
             cursor: pointer;
             border-radius: 25px;
-            /* Para o outline ficar redondo */
         }
 
         .card {
@@ -321,22 +354,23 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 30px;
+            padding: 40px;
             box-sizing: border-box;
             text-align: center;
-            background: #fff;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            color: #333;
+            background: var(--card-bg);
+            /* Fundo Pastel */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            color: var(--text-main);
         }
 
         .back {
             transform: rotateY(180deg);
-            background: #f0fff4;
-            border: 5px solid var(--secondary);
+            background: var(--card-back-bg);
+            border: 4px solid var(--secondary);
         }
 
         .front {
-            border-bottom: 10px solid #eee;
+            border-bottom: 8px solid rgba(0, 0, 0, 0.1);
         }
 
         .big-text {
@@ -349,11 +383,11 @@
             font-size: 0.9rem;
             text-transform: uppercase;
             letter-spacing: 2px;
-            color: #888;
+            opacity: 0.7;
             margin-bottom: 15px;
         }
 
-        /* Rodapé de Jogo */
+        /* Footer */
         .footer-controls {
             width: 100%;
             text-align: center;
@@ -370,7 +404,7 @@
 
         .progress-track {
             width: 100%;
-            height: 12px;
+            height: 10px;
             background: var(--progress-bg);
             border-radius: 10px;
             overflow: hidden;
@@ -387,7 +421,7 @@
         .progress-text {
             font-size: 0.9rem;
             font-weight: bold;
-            opacity: 0.8;
+            opacity: 0.7;
         }
 
         .hidden {
@@ -402,11 +436,14 @@
         <h1 class="main-title">Quiz da Família</h1>
 
         <div class="theme-bar">
-            <button class="dot" style="background:#a1c4fd" onclick="setTheme('')" title="Padrão"></button>
-            <button class="dot" style="background:#11998e" onclick="setTheme('jungle')" title="Natureza"></button>
-            <button class="dot" style="background:#e056fd" onclick="setTheme('cyber')" title="Cyberpunk"></button>
-            <button class="dot" style="background:#09203f" onclick="setTheme('ocean')" title="Oceano"></button>
-            <button class="dot" style="background:#000" onclick="setTheme('contrast')" title="Contraste"></button>
+            <button class="dot" style="background:#e0c3fc" onclick="setTheme('')" title="Padrão (Suave)"></button>
+            <button class="dot" style="background:#71b280" onclick="setTheme('jungle')" title="Natureza"></button>
+            <button class="dot" style="background:#2d3436" onclick="setTheme('cyber')" title="Dark Mode"></button>
+            <button class="dot" style="background:#537895" onclick="setTheme('ocean')" title="Oceano"></button>
+            <button class="dot" style="background:#000; border-color:#fff" onclick="setTheme('contrast')"
+                title="Contraste"></button>
+            <button class="dot" style="background:#ff9966" onclick="setTheme('sunset')" title="Crepúsculo"></button>
+            <button class="dot" style="background:#b29f94" onclick="setTheme('coffee')" title="Leitura/Café"></button>
         </div>
     </header>
 
@@ -437,11 +474,10 @@
                     <div class="face front">
                         <span class="label">PERGUNTA</span>
                         <div class="big-text" id="qText">...</div>
-                        <div style="font-size:0.8rem; margin-top:20px; color:#aaa">(Pressione OK para ver a resposta)
-                        </div>
+                        <div style="font-size:0.8rem; margin-top:20px; opacity:0.5">(OK para ver a resposta)</div>
                     </div>
                     <div class="face back">
-                        <span class="label" style="color:var(--secondary)">RESPOSTA</span>
+                        <span class="label" style="color:var(--primary)">RESPOSTA</span>
                         <div class="big-text" id="aText">...</div>
                     </div>
                 </div>
@@ -491,6 +527,7 @@
         window.onload = async function () {
             const msg = document.getElementById('loading-msg');
             try {
+                // Fetch com cache busting
                 const response = await fetch('flashcards.csv?v=' + new Date().getTime());
                 if (!response.ok) throw new Error("Arquivo não encontrado");
 
@@ -511,7 +548,7 @@
             }
         };
 
-        // --- PARSER ---
+        // --- PARSER CSV ---
         function parseCSV(text) {
             const rows = [];
             let r = [], f = '', q = false;
@@ -542,7 +579,7 @@
             r.readAsText(f);
         }
 
-        // --- JOGO ---
+        // --- GAMEPLAY ---
         function addPlayer() {
             const el = document.getElementById('pName');
             const val = el.value.trim();
@@ -556,7 +593,7 @@
         function startGame() {
             if (!players.length) return alert("Adicione jogadores!");
 
-            // Shuffle
+            // FISHER-YATES SHUFFLE (Aleatoriedade Real)
             for (let i = deck.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [deck[i], deck[j]] = [deck[j], deck[i]];
@@ -568,7 +605,7 @@
             updateUI();
             loadCard();
 
-            // Foco inicial no cartão para facilitar uso do controle
+            // Foco inicial no cartão
             setTimeout(() => document.getElementById('sceneContainer').focus(), 500);
         }
 
@@ -594,7 +631,6 @@
             document.getElementById('aText').innerText = deck[0].a;
 
             updateUI();
-            // Retorna o foco para o cartão ao carregar nova pergunta
             document.getElementById('sceneContainer').focus();
         }
 
@@ -604,7 +640,6 @@
             if (isFlipped) {
                 card.classList.add('flipped');
                 document.getElementById('actions').classList.remove('hidden');
-                // Move o foco para o botão ACERTEI (mais comum)
                 setTimeout(() => document.querySelector('.btn-correct').focus(), 300);
             } else {
                 card.classList.remove('flipped');
@@ -613,9 +648,10 @@
             }
         }
 
-        // Função para capturar tecla ENTER no cartão (Acessibilidade TV)
         function handleCardKey(e) {
-            if (e.key === 'Enter' || e.keyCode === 13) {
+            // ENTER ou SPACE para virar
+            if (e.key === 'Enter' || e.keyCode === 13 || e.keyCode === 32) {
+                e.preventDefault(); // Evita scroll com espaço
                 flip();
             }
         }
@@ -642,7 +678,6 @@
                 </div>
             `).join('');
 
-            // Foco no botão de novo jogo
             setTimeout(() => document.querySelector('#end .btn-start').focus(), 500);
         }
     </script>
