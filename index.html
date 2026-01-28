@@ -16,6 +16,7 @@
             --secondary: #00cec9;
             --btn-text: #fff;
             --focus-outline: 4px solid #ffeaa7;
+            --focus-glow: 0 0 15px #ffeaa7;
             --card-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
             --progress-bg: rgba(0, 0, 0, 0.1);
         }
@@ -27,6 +28,7 @@
             --text-main: #1b5e20;
             --primary: #d35400;
             --secondary: #27ae60;
+            --focus-outline: 4px solid #ff9f43;
         }
 
         /* TEMA 3: CYBERPUNK */
@@ -37,6 +39,8 @@
             --primary: #e056fd;
             --secondary: #0984e3;
             --progress-bg: rgba(255, 255, 255, 0.2);
+            --focus-outline: 4px solid #00cec9;
+            --focus-glow: 0 0 20px #00cec9;
         }
 
         /* TEMA 4: OCEANO */
@@ -68,20 +72,60 @@
             background-attachment: fixed;
             color: var(--text-main);
             margin: 0;
-            padding: 0;
+            padding: 20px;
             height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            box-sizing: border-box;
             overflow: hidden;
             transition: background 0.5s ease;
         }
 
+        /* --- HEADER (Título + Temas) --- */
+        header {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        .main-title {
+            margin: 0;
+            font-size: 2rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            font-weight: 900;
+            text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.05);
+        }
+
+        .theme-bar {
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 8px 15px;
+            border-radius: 50px;
+            backdrop-filter: blur(5px);
+        }
+
+        .dot {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: 3px solid white;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* --- CONTAINER PRINCIPAL --- */
         .app-container {
-            width: 90%;
-            height: 80%;
-            /* Reduzi um pouco a altura para sobrar espaço pro tema */
+            width: 100%;
+            height: 100%;
             max-width: 1200px;
             background: var(--glass);
             border-radius: 30px;
@@ -93,27 +137,29 @@
             align-items: center;
             position: relative;
             transition: background 0.3s ease;
-            margin-bottom: 20px;
         }
 
-        /* TÍTULO PRINCIPAL */
-        .main-title {
-            margin: 0 0 10px 0;
-            font-size: 2.5rem;
-            color: var(--primary);
-            text-transform: uppercase;
-            font-weight: 900;
-            letter-spacing: 2px;
-            text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.05);
-            text-align: center;
+        /* --- FOCO DO CONTROLE REMOTO --- */
+        :focus {
+            outline: none;
+            /* Remove padrão feio do browser */
         }
 
-        /* CONTROLES REMOTOS */
+        /* Aplica estilo de foco customizado para elementos navegáveis */
         button:focus,
-        input:focus {
+        input:focus,
+        .scene:focus,
+        .dot:focus {
             outline: var(--focus-outline);
+            box-shadow: var(--focus-glow, none);
             transform: scale(1.05);
-            z-index: 100;
+            z-index: 500;
+        }
+
+        /* Foco específico no cartão */
+        .scene:focus .card {
+            border: 4px solid var(--secondary);
+            /* Borda extra para indicar foco no card */
         }
 
         /* --- TELAS --- */
@@ -147,7 +193,7 @@
             color: #00b894;
         }
 
-        /* Inputs e Lista de Players */
+        /* Inputs */
         .input-group {
             background: rgba(0, 0, 0, 0.05);
             padding: 25px;
@@ -164,6 +210,7 @@
             width: 50%;
         }
 
+        /* Botões */
         .btn {
             padding: 12px 30px;
             font-size: 1.3rem;
@@ -215,7 +262,7 @@
             color: #333;
         }
 
-        /* PLACAR */
+        /* Placar */
         .scoreboard {
             display: flex;
             gap: 15px;
@@ -240,21 +287,24 @@
             font-weight: bold;
         }
 
-        /* CARTÃO 3D */
+        /* CARTÃO 3D (Focusable via tabindex) */
         .scene {
             perspective: 1000px;
             width: 90%;
             flex-grow: 1;
             margin: 10px 0;
             cursor: pointer;
+            border-radius: 25px;
+            /* Para o outline ficar redondo */
         }
 
         .card {
             width: 100%;
             height: 100%;
             position: relative;
-            transition: transform 0.8s;
+            transition: transform 0.6s;
             transform-style: preserve-3d;
+            border-radius: 25px;
         }
 
         .card.flipped {
@@ -303,7 +353,7 @@
             margin-bottom: 15px;
         }
 
-        /* PROGRESS BAR */
+        /* Rodapé de Jogo */
         .footer-controls {
             width: 100%;
             text-align: center;
@@ -340,40 +390,6 @@
             opacity: 0.8;
         }
 
-        /* THEME SWITCHER (CORRIGIDO: FIXED BOTTOM) */
-        .theme-bar {
-            position: fixed;
-            /* Fixado na tela, não no container */
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 20px;
-            background: rgba(255, 255, 255, 0.3);
-            padding: 12px 25px;
-            border-radius: 50px;
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .dot {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            border: 3px solid white;
-            cursor: pointer;
-            transition: transform 0.2s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-        }
-
-        .dot:hover,
-        .dot:focus {
-            transform: scale(1.2);
-            outline: none;
-            border-color: var(--primary);
-        }
-
         .hidden {
             display: none !important;
         }
@@ -382,7 +398,17 @@
 
 <body data-theme="alegria">
 
-    <h1 class="main-title">Quiz da Família</h1>
+    <header>
+        <h1 class="main-title">Quiz da Família</h1>
+
+        <div class="theme-bar">
+            <button class="dot" style="background:#a1c4fd" onclick="setTheme('')" title="Padrão"></button>
+            <button class="dot" style="background:#11998e" onclick="setTheme('jungle')" title="Natureza"></button>
+            <button class="dot" style="background:#e056fd" onclick="setTheme('cyber')" title="Cyberpunk"></button>
+            <button class="dot" style="background:#09203f" onclick="setTheme('ocean')" title="Oceano"></button>
+            <button class="dot" style="background:#000" onclick="setTheme('contrast')" title="Contraste"></button>
+        </div>
+    </header>
 
     <div class="app-container">
 
@@ -406,11 +432,13 @@
         <div id="game" class="hidden screen game-screen">
             <div class="scoreboard" id="board"></div>
 
-            <div class="scene" onclick="flip()">
+            <div class="scene" id="sceneContainer" tabindex="0" onclick="flip()" onkeydown="handleCardKey(event)">
                 <div class="card" id="mainCard">
                     <div class="face front">
                         <span class="label">PERGUNTA</span>
                         <div class="big-text" id="qText">...</div>
+                        <div style="font-size:0.8rem; margin-top:20px; color:#aaa">(Pressione OK para ver a resposta)
+                        </div>
                     </div>
                     <div class="face back">
                         <span class="label" style="color:var(--secondary)">RESPOSTA</span>
@@ -445,14 +473,6 @@
         </div>
     </div>
 
-    <div class="theme-bar">
-        <button class="dot" style="background:#a1c4fd" onclick="setTheme('')" title="Padrão"></button>
-        <button class="dot" style="background:#11998e" onclick="setTheme('jungle')" title="Natureza"></button>
-        <button class="dot" style="background:#e056fd" onclick="setTheme('cyber')" title="Cyberpunk"></button>
-        <button class="dot" style="background:#09203f" onclick="setTheme('ocean')" title="Oceano"></button>
-        <button class="dot" style="background:#000" onclick="setTheme('contrast')" title="Contraste"></button>
-    </div>
-
     <script>
         // --- TEMAS ---
         function setTheme(t) {
@@ -471,7 +491,6 @@
         window.onload = async function () {
             const msg = document.getElementById('loading-msg');
             try {
-                // Fetch com cache busting
                 const response = await fetch('flashcards.csv?v=' + new Date().getTime());
                 if (!response.ok) throw new Error("Arquivo não encontrado");
 
@@ -492,7 +511,7 @@
             }
         };
 
-        // --- PARSER CSV ---
+        // --- PARSER ---
         function parseCSV(text) {
             const rows = [];
             let r = [], f = '', q = false;
@@ -537,7 +556,7 @@
         function startGame() {
             if (!players.length) return alert("Adicione jogadores!");
 
-            // FISHER-YATES SHUFFLE (Aleatoriedade Real)
+            // Shuffle
             for (let i = deck.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [deck[i], deck[j]] = [deck[j], deck[i]];
@@ -548,15 +567,16 @@
 
             updateUI();
             loadCard();
+
+            // Foco inicial no cartão para facilitar uso do controle
+            setTimeout(() => document.getElementById('sceneContainer').focus(), 500);
         }
 
         function updateUI() {
-            // Placar
             document.getElementById('board').innerHTML = players.map((p, i) => `
                 <div class="chip ${i === turn ? 'active' : ''}">${p.name}: ${p.score}</div>
             `).join('');
 
-            // Progresso
             const remaining = deck.length;
             const done = totalStart - remaining;
             const pct = (done / totalStart) * 100;
@@ -574,6 +594,8 @@
             document.getElementById('aText').innerText = deck[0].a;
 
             updateUI();
+            // Retorna o foco para o cartão ao carregar nova pergunta
+            document.getElementById('sceneContainer').focus();
         }
 
         function flip() {
@@ -582,10 +604,19 @@
             if (isFlipped) {
                 card.classList.add('flipped');
                 document.getElementById('actions').classList.remove('hidden');
-                document.querySelector('.btn-correct').focus();
+                // Move o foco para o botão ACERTEI (mais comum)
+                setTimeout(() => document.querySelector('.btn-correct').focus(), 300);
             } else {
                 card.classList.remove('flipped');
                 document.getElementById('actions').classList.add('hidden');
+                document.getElementById('sceneContainer').focus();
+            }
+        }
+
+        // Função para capturar tecla ENTER no cartão (Acessibilidade TV)
+        function handleCardKey(e) {
+            if (e.key === 'Enter' || e.keyCode === 13) {
+                flip();
             }
         }
 
@@ -599,7 +630,7 @@
         function endGame() {
             document.getElementById('game').classList.add('hidden');
             document.getElementById('end').classList.remove('hidden');
-            document.querySelector('.theme-bar').classList.add('hidden'); // Oculta temas no final
+            document.querySelector('header').classList.add('hidden');
 
             players.sort((a, b) => b.score - a.score);
             document.getElementById('winner').innerText = players[0].name;
@@ -610,6 +641,9 @@
                     <b>${p.score}</b>
                 </div>
             `).join('');
+
+            // Foco no botão de novo jogo
+            setTimeout(() => document.querySelector('#end .btn-start').focus(), 500);
         }
     </script>
 </body>
