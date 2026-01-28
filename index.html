@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Teocrático TV</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- VARIÁVEIS DE TEMA (Padrão: Alegria) --- */
+        :root {
+            --bg-grad: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            --glass: rgba(255, 255, 255, 0.95);
+            --text-main: #2d3436;
+            --primary: #6c5ce7;
+            --secondary: #00cec9;
+            --btn-text: #fff;
+            --focus-outline: 4px solid #ffeaa7;
+            /* Destaque para controle remoto */
+            --card-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Temas Alternativos */
+        [data-theme="jungle"] {
+            --bg-grad: linear-gradient(to bottom, #11998e, #38ef7d);
+            --glass: rgba(255, 253, 231, 0.98);
+            --text-main: #1b5e20;
+            --primary: #d35400;
+            --secondary: #27ae60;
+        }
+
+        [data-theme="cyber"] {
+            --bg-grad: linear-gradient(135deg, #2d3436, #000000);
+            --glass: rgba(45, 52, 54, 0.95);
+            --text-main: #dfe6e9;
+            --primary: #e056fd;
+            --secondary: #0984e3;
+        }
+
+        [data-theme="ocean"] {
+            --bg-grad: linear-gradient(to top, #09203f 0%, #537895 100%);
+            --glass: rgba(240, 248, 255, 0.95);
+            --text-main: #0c2461;
+            --primary: #eb3b5a;
+            --secondary: #1e3799;
+        }
+
+        [data-theme="contrast"] {
+            --bg-grad: #000000;
+            --glass: #000000;
+            --text-main: #ffffff;
+            --primary: #ff0000;
+            --secondary: #ffff00;
+            --btn-text: #000;
+            --focus-outline: 4px solid #fff;
+            border: 2px solid white;
+        }
+
+        /* --- CSS BASE --- */
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: var(--bg-grad);
+            background-attachment: fixed;
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            /* Fullscreen TV */
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            /* Evita scroll na TV */
+        }
+
+        .app-container {
+            width: 90%;
+            height: 85%;
+            max-width: 1200px;
+            /* Largura TV */
+            background: var(--glass);
+            border-radius: 30px;
+            box-shadow: var(--card-shadow);
+            padding: 40px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5rem;
+            color: var(--primary);
+            text-transform: uppercase;
+        }
+
+        /* --- Foco para Controle Remoto (D-Pad) --- */
+        button:focus,
+        input:focus {
+            outline: var(--focus-outline);
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        /* --- TELA 1: SETUP --- */
+        .setup-screen {
+            text-align: center;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .status-msg {
+            font-size: 1.5rem;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        .error {
+            color: #d63031;
+        }
+
+        .success {
+            color: #00b894;
+        }
+
+        .input-group {
+            margin: 30px 0;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 30px;
+            border-radius: 20px;
+            width: 80%;
+        }
+
+        input[type="text"] {
+            font-size: 1.5rem;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #ccc;
+            width: 60%;
+            margin-right: 10px;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            /* Botões Grandes */
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            color: var(--btn-text);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: 0.2s;
+        }
+
+        .btn-add {
+            background: var(--text-main);
+        }
+
+        .btn-start {
+            background: var(--secondary);
+            width: 80%;
+            margin-top: 20px;
+            font-size: 2rem;
+        }
+
+        .btn-wrong {
+            background: var(--primary);
+        }
+
+        .btn-correct {
+            background: var(--secondary);
+        }
+
+        #player-list {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .p-tag {
+            font-size: 1.2rem;
+            background: #fff;
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* --- TELA 2: JOGO --- */
+        .game-screen {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .scoreboard {
+            display: flex;
+            gap: 20px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 50px;
+        }
+
+        .chip {
+            padding: 10px 25px;
+            font-size: 1.2rem;
+            background: #fff;
+            border-radius: 40px;
+            border: 4px solid transparent;
+        }
+
+        .chip.active {
+            border-color: var(--primary);
+            font-weight: bold;
+            transform: scale(1.1);
+        }
+
+        /* CARTÃO GIGANTE */
+        .scene {
+            perspective: 1000px;
+            width: 90%;
+            height: 50%;
+            cursor: pointer;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            box-sizing: border-box;
+            text-align: center;
+            background: #fff;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            color: #333;
+            /* Texto preto sempre no card para contraste */
+        }
+
+        .back {
+            transform: rotateY(180deg);
+            background: #f0fff4;
+            border: 5px solid var(--secondary);
+        }
+
+        .front {
+            border-bottom: 10px solid #eee;
+        }
+
+        .big-text {
+            font-size: 2.5rem;
+            line-height: 1.3;
+            font-weight: 500;
+        }
+
+        .label {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 20px;
+        }
+
+        /* --- THEME BAR (Controle Remoto Friendly) --- */
+        .theme-dots {
+            position: absolute;
+            bottom: -60px;
+            /* Fora do container */
+            display: flex;
+            gap: 15px;
+        }
+
+        .dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid white;
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body data-theme="alegria">
+
+    <div class="app-container">
+
+        <div id="setup" class="setup-screen">
+            <h1>Quiz TV</h1>
+
+            <div id="loading-msg" class="status-msg">
+                🔄 Buscando "quiz.csv"...
+            </div>
+
+            <div id="player-setup" class="hidden" style="width: 100%;">
+                <div class="input-group">
+                    <label style="display:block; font-size:1.5rem; margin-bottom:15px;">Quem vai jogar?</label>
+                    <input type="text" id="pName" placeholder="Nome" onkeydown="if(event.key==='Enter') addPlayer()">
+                    <button class="btn btn-add" onclick="addPlayer()">ADICIONAR</button>
+                    <div id="player-list"></div>
+                </div>
+
+                <button class="btn btn-start" onclick="startGame()">COMEÇAR JOGO</button>
+
+                <div style="margin-top:20px; font-size:1rem; opacity:0.7;">
+                    Total de cartas: <span id="card-count">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="game" class="hidden game-screen">
+            <div class="scoreboard" id="board"></div>
+
+            <div class="scene" onclick="flip()">
+                <div class="card" id="mainCard">
+                    <div class="face front">
+                        <span class="label">PERGUNTA</span>
+                        <div class="big-text" id="qText">...</div>
+                    </div>
+                    <div class="face back">
+                        <span class="label" style="color:var(--secondary)">RESPOSTA</span>
+                        <div class="big-text" id="aText">...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="actions" class="controls hidden">
+                <button class="btn btn-wrong" onclick="next(false)">ERREI</button>
+                <button class="btn btn-correct" onclick="next(true)">ACERTEI</button>
+            </div>
+        </div>
+
+        <div id="end" class="hidden setup-screen">
+            <h1 style="font-size:4rem">FIM!</h1>
+            <h2 id="winner" style="font-size:3rem; color:var(--primary)"></h2>
+            <div id="ranking" style="font-size:1.5rem; margin:30px"></div>
+            <button class="btn btn-start" onclick="location.reload()">NOVO JOGO</button>
+        </div>
+
+    </div>
+
+    <div class="theme-dots">
+        <button class="dot" style="background:#a1c4fd" onclick="setTheme('')" title="Padrão"></button>
+        <button class="dot" style="background:#11998e" onclick="setTheme('jungle')" title="Natureza"></button>
+        <button class="dot" style="background:#e056fd" onclick="setTheme('cyber')" title="Cyberpunk"></button>
+        <button class="dot" style="background:#09203f" onclick="setTheme('ocean')" title="Oceano"></button>
+        <button class="dot" style="background:#000" onclick="setTheme('contrast')" title="Contraste"></button>
+    </div>
+
+    <script>
+        // --- LÓGICA DE TEMAS ---
+        function setTheme(t) {
+            if (t) document.body.setAttribute('data-theme', t);
+            else document.body.removeAttribute('data-theme');
+        }
+
+        // --- ESTADO ---
+        let deck = [];
+        let players = [];
+        let turn = 0;
+        let isFlipped = false;
+
+        // --- INICIALIZAÇÃO (AUTO FETCH) ---
+        window.onload = async function () {
+            const msg = document.getElementById('loading-msg');
+            try {
+                // Adiciona um número aleatório no final da URL para obrigar a TV a baixar de novo
+                const response = await fetch('quiz.csv?v=' + new Date().getTime());
+
+                if (!response.ok) throw new Error("Arquivo não encontrado (404)");
+
+                const text = await response.text();
+                deck = parseCSV(text);
+
+                if (deck.length > 0) {
+                    msg.innerHTML = `<span class="success">✅ ${deck.length} Perguntas carregadas!</span>`;
+                    document.getElementById('player-setup').classList.remove('hidden');
+                    document.getElementById('card-count').innerText = deck.length;
+                } else {
+                    throw new Error("CSV vazio ou formato inválido");
+                }
+
+            } catch (err) {
+                msg.innerHTML = `
+                <div class="error">❌ Erro: ${err.message}</div>
+                <div style="font-size:1rem; margin-top:10px">
+                    Certifique-se de que <b>quiz.csv</b> está na mesma pasta.<br>
+                    Se estiver usando USB na TV, tente hospedar no GitHub Pages.
+                </div>
+            `;
+                // Fallback: Botão de upload manual se o fetch falhar (ex: CORS)
+                msg.innerHTML += `<br><input type="file" onchange="manualLoad(this)" style="margin-top:20px">`;
+            }
+        };
+
+        // --- PARSER CSV (O mesmo robusto de antes) ---
+        function parseCSV(text) {
+            const rows = [];
+            let r = [], f = '', q = false;
+            for (let i = 0; i < text.length; i++) {
+                let c = text[i], n = text[i + 1];
+                if (c === '"') { if (q && n === '"') { f += '"'; i++; } else { q = !q; } }
+                else if (c === ',' && !q) { r.push(f); f = ''; }
+                else if ((c === '\n' || c === '\r') && !q) {
+                    if (f || r.length) r.push(f);
+                    if (r.length >= 2) rows.push({ q: r[0], a: r[1] });
+                    r = []; f = '';
+                } else { f += c; }
+            }
+            if (f || r.length) { r.push(f); if (r.length >= 2) rows.push({ q: r[0], a: r[1] }); }
+            return rows;
+        }
+
+        function manualLoad(input) {
+            const f = input.files[0];
+            if (!f) return;
+            const r = new FileReader();
+            r.onload = (e) => {
+                deck = parseCSV(e.target.result);
+                document.getElementById('loading-msg').innerHTML = `<span class="success">✅ Carregado Manualmente!</span>`;
+                document.getElementById('player-setup').classList.remove('hidden');
+            };
+            r.readAsText(f);
+        }
+
+        // --- GAMEPLAY ---
+        function addPlayer() {
+            const input = document.getElementById('pName');
+            const name = input.value.trim();
+            if (name) {
+                players.push({ name, score: 0 });
+                input.value = '';
+                renderPlayers();
+            }
+        }
+
+        function renderPlayers() {
+            document.getElementById('player-list').innerHTML = players.map(p =>
+                `<div class="p-tag">👤 ${p.name}</div>`
+            ).join('');
+        }
+
+        function startGame() {
+            if (!players.length) return alert("Adicione jogadores!");
+            // Shuffle
+            deck.sort(() => Math.random() - 0.5);
+
+            document.getElementById('setup').classList.add('hidden');
+            document.getElementById('game').classList.remove('hidden');
+            updateBoard();
+            loadCard();
+        }
+
+        function updateBoard() {
+            document.getElementById('board').innerHTML = players.map((p, i) => `
+            <div class="chip ${i === turn ? 'active' : ''}">
+                ${p.name}: ${p.score}
+            </div>
+        `).join('');
+        }
+
+        function loadCard() {
+            if (!deck.length) return endGame();
+            isFlipped = false;
+            document.getElementById('mainCard').classList.remove('flipped');
+            document.getElementById('actions').classList.add('hidden');
+
+            const card = deck[0];
+            document.getElementById('qText').innerText = card.q;
+            document.getElementById('aText').innerText = card.a;
+        }
+
+        function flip() {
+            const card = document.getElementById('mainCard');
+            isFlipped = !isFlipped;
+            if (isFlipped) {
+                card.classList.add('flipped');
+                document.getElementById('actions').classList.remove('hidden');
+                // Foco automático no botão de acerto para facilitar controle remoto
+                document.querySelector('.btn-correct').focus();
+            } else {
+                card.classList.remove('flipped');
+                document.getElementById('actions').classList.add('hidden');
+            }
+        }
+
+        function next(win) {
+            if (win) players[turn].score++;
+            turn = (turn + 1) % players.length;
+            deck.shift();
+            updateBoard();
+            loadCard();
+        }
+
+        function endGame() {
+            document.getElementById('game').classList.add('hidden');
+            document.getElementById('end').classList.remove('hidden');
+
+            players.sort((a, b) => b.score - a.score);
+            document.getElementById('winner').innerText = `Vencedor: ${players[0].name} 🏆`;
+            document.getElementById('ranking').innerHTML = players.map(p =>
+                `<div>${p.name}: <b>${p.score}</b></div>`
+            ).join('');
+        }
+
+    </script>
+</body>
+
+</html>
