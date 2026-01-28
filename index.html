@@ -80,7 +80,8 @@
 
         .app-container {
             width: 90%;
-            height: 85%;
+            height: 80%;
+            /* Reduzi um pouco a altura para sobrar espaço pro tema */
             max-width: 1200px;
             background: var(--glass);
             border-radius: 30px;
@@ -92,11 +93,12 @@
             align-items: center;
             position: relative;
             transition: background 0.3s ease;
+            margin-bottom: 20px;
         }
 
         /* TÍTULO PRINCIPAL */
         .main-title {
-            margin: 0 0 15px 0;
+            margin: 0 0 10px 0;
             font-size: 2.5rem;
             color: var(--primary);
             text-transform: uppercase;
@@ -338,17 +340,21 @@
             opacity: 0.8;
         }
 
-        /* THEME SWITCHER (Fixo em Baixo) */
+        /* THEME SWITCHER (CORRIGIDO: FIXED BOTTOM) */
         .theme-bar {
-            position: absolute;
-            bottom: -70px;
-            /* Fora do container branco */
+            position: fixed;
+            /* Fixado na tela, não no container */
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
-            gap: 15px;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 10px 20px;
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 12px 25px;
             border-radius: 50px;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
         .dot {
@@ -376,8 +382,9 @@
 
 <body data-theme="alegria">
 
+    <h1 class="main-title">Quiz da Família</h1>
+
     <div class="app-container">
-        <h1 class="main-title">Quiz da Família</h1>
 
         <div id="setup" class="screen setup-screen">
             <div id="loading-msg" class="status-msg">🔄 Carregando perguntas...</div>
