@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Teocrático TV</title>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <title>Quiz da Família TV</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap" rel="stylesheet">
     <style>
         /* --- VARIÁVEIS DE TEMA (Padrão: Alegria) --- */
         :root {
@@ -16,11 +16,11 @@
             --secondary: #00cec9;
             --btn-text: #fff;
             --focus-outline: 4px solid #ffeaa7;
-            /* Destaque para controle remoto */
             --card-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            --progress-bg: rgba(0, 0, 0, 0.1);
         }
 
-        /* Temas Alternativos */
+        /* TEMA 2: JUNGLE */
         [data-theme="jungle"] {
             --bg-grad: linear-gradient(to bottom, #11998e, #38ef7d);
             --glass: rgba(255, 253, 231, 0.98);
@@ -29,14 +29,17 @@
             --secondary: #27ae60;
         }
 
+        /* TEMA 3: CYBERPUNK */
         [data-theme="cyber"] {
             --bg-grad: linear-gradient(135deg, #2d3436, #000000);
             --glass: rgba(45, 52, 54, 0.95);
             --text-main: #dfe6e9;
             --primary: #e056fd;
             --secondary: #0984e3;
+            --progress-bg: rgba(255, 255, 255, 0.2);
         }
 
+        /* TEMA 4: OCEANO */
         [data-theme="ocean"] {
             --bg-grad: linear-gradient(to top, #09203f 0%, #537895 100%);
             --glass: rgba(240, 248, 255, 0.95);
@@ -45,6 +48,7 @@
             --secondary: #1e3799;
         }
 
+        /* TEMA 5: ALTO CONTRASTE */
         [data-theme="contrast"] {
             --bg-grad: #000000;
             --glass: #000000;
@@ -53,10 +57,11 @@
             --secondary: #ffff00;
             --btn-text: #000;
             --focus-outline: 4px solid #fff;
+            --progress-bg: #333;
             border: 2px solid white;
         }
 
-        /* --- CSS BASE --- */
+        /* --- CSS GERAL --- */
         body {
             font-family: 'Quicksand', sans-serif;
             background: var(--bg-grad);
@@ -64,61 +69,71 @@
             color: var(--text-main);
             margin: 0;
             padding: 0;
-            /* Fullscreen TV */
             height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            /* Evita scroll na TV */
+            transition: background 0.5s ease;
         }
 
         .app-container {
             width: 90%;
             height: 85%;
             max-width: 1200px;
-            /* Largura TV */
             background: var(--glass);
             border-radius: 30px;
             box-shadow: var(--card-shadow);
-            padding: 40px;
+            padding: 30px;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
             align-items: center;
             position: relative;
+            transition: background 0.3s ease;
         }
 
-        h1 {
-            margin: 0 0 10px 0;
+        /* TÍTULO PRINCIPAL */
+        .main-title {
+            margin: 0 0 15px 0;
             font-size: 2.5rem;
             color: var(--primary);
             text-transform: uppercase;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.05);
+            text-align: center;
         }
 
-        /* --- Foco para Controle Remoto (D-Pad) --- */
+        /* CONTROLES REMOTOS */
         button:focus,
         input:focus {
             outline: var(--focus-outline);
             transform: scale(1.05);
-            z-index: 10;
+            z-index: 100;
         }
 
-        /* --- TELA 1: SETUP --- */
-        .setup-screen {
-            text-align: center;
+        /* --- TELAS --- */
+        .screen {
             width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
+        }
+
+        .setup-screen {
             justify-content: center;
-            height: 100%;
+        }
+
+        .game-screen {
+            justify-content: space-between;
         }
 
         .status-msg {
             font-size: 1.5rem;
-            margin: 20px 0;
+            margin: 15px 0;
             font-weight: bold;
         }
 
@@ -130,27 +145,26 @@
             color: #00b894;
         }
 
+        /* Inputs e Lista de Players */
         .input-group {
-            margin: 30px 0;
             background: rgba(0, 0, 0, 0.05);
-            padding: 30px;
+            padding: 25px;
             border-radius: 20px;
-            width: 80%;
+            width: 70%;
+            text-align: center;
         }
 
         input[type="text"] {
-            font-size: 1.5rem;
-            padding: 15px;
+            font-size: 1.4rem;
+            padding: 12px;
             border-radius: 10px;
             border: 2px solid #ccc;
-            width: 60%;
-            margin-right: 10px;
+            width: 50%;
         }
 
         .btn {
-            padding: 15px 40px;
-            font-size: 1.5rem;
-            /* Botões Grandes */
+            padding: 12px 30px;
+            font-size: 1.3rem;
             border-radius: 50px;
             border: none;
             cursor: pointer;
@@ -158,6 +172,7 @@
             color: var(--btn-text);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             transition: 0.2s;
+            margin: 5px;
         }
 
         .btn-add {
@@ -166,72 +181,69 @@
 
         .btn-start {
             background: var(--secondary);
-            width: 80%;
+            width: 60%;
+            font-size: 1.8rem;
             margin-top: 20px;
-            font-size: 2rem;
         }
 
         .btn-wrong {
             background: var(--primary);
+            width: 150px;
         }
 
         .btn-correct {
             background: var(--secondary);
+            width: 150px;
         }
 
         #player-list {
-            margin-top: 20px;
+            margin-top: 15px;
             display: flex;
-            gap: 15px;
+            gap: 10px;
             flex-wrap: wrap;
             justify-content: center;
         }
 
         .p-tag {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             background: #fff;
-            padding: 10px 20px;
-            border-radius: 50px;
+            padding: 8px 15px;
+            border-radius: 20px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            color: #333;
         }
 
-        /* --- TELA 2: JOGO --- */
-        .game-screen {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-        }
-
+        /* PLACAR */
         .scoreboard {
             display: flex;
-            gap: 20px;
-            padding: 10px;
+            gap: 15px;
+            padding: 8px 20px;
             background: rgba(0, 0, 0, 0.05);
             border-radius: 50px;
+            margin-bottom: 10px;
         }
 
         .chip {
-            padding: 10px 25px;
+            padding: 8px 20px;
             font-size: 1.2rem;
             background: #fff;
-            border-radius: 40px;
+            border-radius: 30px;
             border: 4px solid transparent;
+            color: #333;
         }
 
         .chip.active {
             border-color: var(--primary);
-            font-weight: bold;
             transform: scale(1.1);
+            font-weight: bold;
         }
 
-        /* CARTÃO GIGANTE */
+        /* CARTÃO 3D */
         .scene {
             perspective: 1000px;
             width: 90%;
-            height: 50%;
+            flex-grow: 1;
+            margin: 10px 0;
             cursor: pointer;
         }
 
@@ -252,18 +264,17 @@
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
-            border-radius: 30px;
+            border-radius: 25px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 40px;
+            padding: 30px;
             box-sizing: border-box;
             text-align: center;
             background: #fff;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             color: #333;
-            /* Texto preto sempre no card para contraste */
         }
 
         .back {
@@ -277,40 +288,84 @@
         }
 
         .big-text {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             line-height: 1.3;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .label {
-            font-size: 1rem;
+            font-size: 0.9rem;
             text-transform: uppercase;
             letter-spacing: 2px;
             color: #888;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+        }
+
+        /* PROGRESS BAR */
+        .footer-controls {
+            width: 100%;
+            text-align: center;
+            padding-top: 10px;
         }
 
         .controls {
             display: flex;
-            gap: 40px;
-            margin-bottom: 20px;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 15px;
+            min-height: 60px;
         }
 
-        /* --- THEME BAR (Controle Remoto Friendly) --- */
-        .theme-dots {
+        .progress-track {
+            width: 100%;
+            height: 12px;
+            background: var(--progress-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--primary);
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            font-size: 0.9rem;
+            font-weight: bold;
+            opacity: 0.8;
+        }
+
+        /* THEME SWITCHER (Fixo em Baixo) */
+        .theme-bar {
             position: absolute;
-            bottom: -60px;
-            /* Fora do container */
+            bottom: -70px;
+            /* Fora do container branco */
             display: flex;
             gap: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 50px;
+            backdrop-filter: blur(5px);
         }
 
         .dot {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             border: 3px solid white;
             cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .dot:hover,
+        .dot:focus {
+            transform: scale(1.2);
+            outline: none;
+            border-color: var(--primary);
         }
 
         .hidden {
@@ -322,31 +377,26 @@
 <body data-theme="alegria">
 
     <div class="app-container">
+        <h1 class="main-title">Quiz da Família</h1>
 
-        <div id="setup" class="setup-screen">
-            <h1>Quiz TV</h1>
+        <div id="setup" class="screen setup-screen">
+            <div id="loading-msg" class="status-msg">🔄 Carregando perguntas...</div>
 
-            <div id="loading-msg" class="status-msg">
-                🔄 Buscando "flashcards.csv"...
-            </div>
-
-            <div id="player-setup" class="hidden" style="width: 100%;">
+            <div id="player-setup" class="hidden"
+                style="width: 100%; display:flex; flex-direction:column; align-items:center;">
                 <div class="input-group">
-                    <label style="display:block; font-size:1.5rem; margin-bottom:15px;">Quem vai jogar?</label>
+                    <label style="display:block; font-size:1.3rem; margin-bottom:10px;">Jogadores</label>
                     <input type="text" id="pName" placeholder="Nome" onkeydown="if(event.key==='Enter') addPlayer()">
-                    <button class="btn btn-add" onclick="addPlayer()">ADICIONAR</button>
+                    <button class="btn btn-add" onclick="addPlayer()">ADD</button>
                     <div id="player-list"></div>
                 </div>
 
-                <button class="btn btn-start" onclick="startGame()">COMEÇAR JOGO</button>
-
-                <div style="margin-top:20px; font-size:1rem; opacity:0.7;">
-                    Total de cartas: <span id="card-count">0</span>
-                </div>
+                <button class="btn btn-start" onclick="startGame()">INICIAR JOGO</button>
+                <p style="margin-top:10px; opacity:0.6">Total de cartas: <span id="card-count">0</span></p>
             </div>
         </div>
 
-        <div id="game" class="hidden game-screen">
+        <div id="game" class="hidden screen game-screen">
             <div class="scoreboard" id="board"></div>
 
             <div class="scene" onclick="flip()">
@@ -362,22 +412,33 @@
                 </div>
             </div>
 
-            <div id="actions" class="controls hidden">
-                <button class="btn btn-wrong" onclick="next(false)">ERREI</button>
-                <button class="btn btn-correct" onclick="next(true)">ACERTEI</button>
+            <div class="footer-controls">
+                <div id="actions" class="controls hidden">
+                    <button class="btn btn-wrong" onclick="next(false)">ERREI</button>
+                    <button class="btn btn-correct" onclick="next(true)">ACERTEI</button>
+                </div>
+
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressBar"></div>
+                </div>
+                <div class="progress-text">
+                    Faltam <span id="remainingCount">0</span> perguntas
+                </div>
             </div>
         </div>
 
-        <div id="end" class="hidden setup-screen">
-            <h1 style="font-size:4rem">FIM!</h1>
-            <h2 id="winner" style="font-size:3rem; color:var(--primary)"></h2>
-            <div id="ranking" style="font-size:1.5rem; margin:30px"></div>
+        <div id="end" class="hidden screen setup-screen">
+            <h1 style="font-size:3rem">VENCEDOR! 🏆</h1>
+            <h2 id="winner" style="font-size:2.5rem; color:var(--primary); margin:10px;"></h2>
+
+            <div id="ranking"
+                style="background:rgba(0,0,0,0.05); padding:20px; border-radius:15px; width:60%; margin:20px 0;"></div>
+
             <button class="btn btn-start" onclick="location.reload()">NOVO JOGO</button>
         </div>
-
     </div>
 
-    <div class="theme-dots">
+    <div class="theme-bar">
         <button class="dot" style="background:#a1c4fd" onclick="setTheme('')" title="Padrão"></button>
         <button class="dot" style="background:#11998e" onclick="setTheme('jungle')" title="Natureza"></button>
         <button class="dot" style="background:#e056fd" onclick="setTheme('cyber')" title="Cyberpunk"></button>
@@ -386,7 +447,7 @@
     </div>
 
     <script>
-        // --- LÓGICA DE TEMAS ---
+        // --- TEMAS ---
         function setTheme(t) {
             if (t) document.body.setAttribute('data-theme', t);
             else document.body.removeAttribute('data-theme');
@@ -397,41 +458,34 @@
         let players = [];
         let turn = 0;
         let isFlipped = false;
+        let totalStart = 0;
 
-        // --- INICIALIZAÇÃO (AUTO FETCH) ---
+        // --- INICIALIZAÇÃO ---
         window.onload = async function () {
             const msg = document.getElementById('loading-msg');
             try {
-                // ALTERADO: Busca por flashcards.csv agora
+                // Fetch com cache busting
                 const response = await fetch('flashcards.csv?v=' + new Date().getTime());
-
-                if (!response.ok) throw new Error("Arquivo não encontrado (404)");
+                if (!response.ok) throw new Error("Arquivo não encontrado");
 
                 const text = await response.text();
                 deck = parseCSV(text);
 
                 if (deck.length > 0) {
-                    msg.innerHTML = `<span class="success">✅ ${deck.length} Perguntas carregadas!</span>`;
+                    totalStart = deck.length;
+                    msg.innerHTML = `<span class="success">✅ Arquivo carregado!</span>`;
                     document.getElementById('player-setup').classList.remove('hidden');
                     document.getElementById('card-count').innerText = deck.length;
                 } else {
-                    throw new Error("CSV vazio ou formato inválido");
+                    throw new Error("CSV vazio");
                 }
-
-            } catch (err) {
-                msg.innerHTML = `
-                <div class="error">❌ Erro: ${err.message}</div>
-                <div style="font-size:1rem; margin-top:10px">
-                    Certifique-se de que <b>flashcards.csv</b> está na mesma pasta.<br>
-                    Se estiver usando USB na TV, tente hospedar no GitHub Pages.
-                </div>
-            `;
-                // Fallback: Botão de upload manual se o fetch falhar (ex: CORS)
-                msg.innerHTML += `<br><input type="file" onchange="manualLoad(this)" style="margin-top:20px">`;
+            } catch (e) {
+                msg.innerHTML = `<span class="error">❌ Erro: ${e.message}</span><br><br>
+                <input type="file" onchange="manualLoad(this)">`;
             }
         };
 
-        // --- PARSER CSV (O mesmo robusto de antes) ---
+        // --- PARSER CSV ---
         function parseCSV(text) {
             const rows = [];
             let r = [], f = '', q = false;
@@ -453,48 +507,54 @@
             const f = input.files[0];
             if (!f) return;
             const r = new FileReader();
-            r.onload = (e) => {
+            r.onload = e => {
                 deck = parseCSV(e.target.result);
-                document.getElementById('loading-msg').innerHTML = `<span class="success">✅ Carregado Manualmente!</span>`;
+                totalStart = deck.length;
+                document.getElementById('loading-msg').innerText = "✅ Carregado!";
                 document.getElementById('player-setup').classList.remove('hidden');
             };
             r.readAsText(f);
         }
 
-        // --- GAMEPLAY ---
+        // --- JOGO ---
         function addPlayer() {
-            const input = document.getElementById('pName');
-            const name = input.value.trim();
-            if (name) {
-                players.push({ name, score: 0 });
-                input.value = '';
-                renderPlayers();
+            const el = document.getElementById('pName');
+            const val = el.value.trim();
+            if (val) {
+                players.push({ name: val, score: 0 });
+                el.value = '';
+                document.getElementById('player-list').innerHTML = players.map(p => `<span class="p-tag">👤 ${p.name}</span>`).join('');
             }
-        }
-
-        function renderPlayers() {
-            document.getElementById('player-list').innerHTML = players.map(p =>
-                `<div class="p-tag">👤 ${p.name}</div>`
-            ).join('');
         }
 
         function startGame() {
             if (!players.length) return alert("Adicione jogadores!");
-            // Shuffle
-            deck.sort(() => Math.random() - 0.5);
+
+            // FISHER-YATES SHUFFLE (Aleatoriedade Real)
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
 
             document.getElementById('setup').classList.add('hidden');
             document.getElementById('game').classList.remove('hidden');
-            updateBoard();
+
+            updateUI();
             loadCard();
         }
 
-        function updateBoard() {
+        function updateUI() {
+            // Placar
             document.getElementById('board').innerHTML = players.map((p, i) => `
-            <div class="chip ${i === turn ? 'active' : ''}">
-                ${p.name}: ${p.score}
-            </div>
-        `).join('');
+                <div class="chip ${i === turn ? 'active' : ''}">${p.name}: ${p.score}</div>
+            `).join('');
+
+            // Progresso
+            const remaining = deck.length;
+            const done = totalStart - remaining;
+            const pct = (done / totalStart) * 100;
+            document.getElementById('progressBar').style.width = pct + "%";
+            document.getElementById('remainingCount').innerText = remaining;
         }
 
         function loadCard() {
@@ -503,9 +563,10 @@
             document.getElementById('mainCard').classList.remove('flipped');
             document.getElementById('actions').classList.add('hidden');
 
-            const card = deck[0];
-            document.getElementById('qText').innerText = card.q;
-            document.getElementById('aText').innerText = card.a;
+            document.getElementById('qText').innerText = deck[0].q;
+            document.getElementById('aText').innerText = deck[0].a;
+
+            updateUI();
         }
 
         function flip() {
@@ -514,7 +575,6 @@
             if (isFlipped) {
                 card.classList.add('flipped');
                 document.getElementById('actions').classList.remove('hidden');
-                // Foco automático no botão de acerto para facilitar controle remoto
                 document.querySelector('.btn-correct').focus();
             } else {
                 card.classList.remove('flipped');
@@ -522,25 +582,28 @@
             }
         }
 
-        function next(win) {
-            if (win) players[turn].score++;
+        function next(point) {
+            if (point) players[turn].score++;
             turn = (turn + 1) % players.length;
             deck.shift();
-            updateBoard();
             loadCard();
         }
 
         function endGame() {
             document.getElementById('game').classList.add('hidden');
             document.getElementById('end').classList.remove('hidden');
+            document.querySelector('.theme-bar').classList.add('hidden'); // Oculta temas no final
 
             players.sort((a, b) => b.score - a.score);
-            document.getElementById('winner').innerText = `Vencedor: ${players[0].name} 🏆`;
-            document.getElementById('ranking').innerHTML = players.map(p =>
-                `<div>${p.name}: <b>${p.score}</b></div>`
-            ).join('');
-        }
+            document.getElementById('winner').innerText = players[0].name;
 
+            document.getElementById('ranking').innerHTML = players.map((p, i) => `
+                <div style="display:flex; justify-content:space-between; font-size:1.5rem; border-bottom:1px solid #ccc; padding:5px;">
+                    <span>${i + 1}º ${p.name}</span>
+                    <b>${p.score}</b>
+                </div>
+            `).join('');
+        }
     </script>
 </body>
 
