@@ -327,7 +327,7 @@
             <h1>Quiz TV</h1>
 
             <div id="loading-msg" class="status-msg">
-                🔄 Buscando "quiz.csv"...
+                🔄 Buscando "flashcards.csv"...
             </div>
 
             <div id="player-setup" class="hidden" style="width: 100%;">
@@ -402,8 +402,8 @@
         window.onload = async function () {
             const msg = document.getElementById('loading-msg');
             try {
-                // Adiciona um número aleatório no final da URL para obrigar a TV a baixar de novo
-                const response = await fetch('quiz.csv?v=' + new Date().getTime());
+                // ALTERADO: Busca por flashcards.csv agora
+                const response = await fetch('flashcards.csv?v=' + new Date().getTime());
 
                 if (!response.ok) throw new Error("Arquivo não encontrado (404)");
 
@@ -422,7 +422,7 @@
                 msg.innerHTML = `
                 <div class="error">❌ Erro: ${err.message}</div>
                 <div style="font-size:1rem; margin-top:10px">
-                    Certifique-se de que <b>quiz.csv</b> está na mesma pasta.<br>
+                    Certifique-se de que <b>flashcards.csv</b> está na mesma pasta.<br>
                     Se estiver usando USB na TV, tente hospedar no GitHub Pages.
                 </div>
             `;
