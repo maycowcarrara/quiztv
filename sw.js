@@ -1,16 +1,14 @@
-const CACHE_NAME = 'quiz-familia-v1'; // Mude para v2 se alterar o HTML/CSS no futuro
+const CACHE_NAME = 'quiz-familia-v11'; // Mudar versão para forçar a atualização imediata (camada expra)
 
-// Arquivos vitais para o app abrir (App Shell)
-// O CSV não entra aqui pois é tratado dinamicamente
 const urlsToCache = [
     './',
     './index.html',
     './manifest.json'
 ];
 
-// 1. INSTALAÇÃO: Cacheia o "esqueleto" do app
+// 1. INSTALAÇÃO: Cacheia os arquivos essenciais
 self.addEventListener('install', event => {
-    self.skipWaiting(); // Força o SW a ativar imediatamente
+    self.skipWaiting(); // Força o novo SW a assumir o controle imediatamente
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
@@ -20,7 +18,7 @@ self.addEventListener('install', event => {
     );
 });
 
-// 2. ATIVAÇÃO: Limpa caches antigos (v1, v2...) para liberar espaço
+// 2. ATIVAÇÃO: Limpa caches antigos para não acumular lixo
 self.addEventListener('activate', event => {
     event.waitUntil(
         caches.keys().then(cacheNames => {
@@ -36,15 +34,20 @@ self.addEventListener('activate', event => {
     );
 });
 
-// 3. INTERCEPTAÇÃO DE REDE (A Mágica)
+// 3. INTERCEPTAÇÃO DE REDE (A Mágica Melhorada)
 self.addEventListener('fetch', event => {
 
-    // ESTRATÉGIA A: Para o CSV (Network First - Rede Primeiro)
-    if (event.request.url.includes('flashcards.csv')) {
+    // DEFINIÇÃO DO QUE PRECISA SER FRESCO (NETWORK FIRST)
+    // 1. O arquivo CSV de perguntas
+    // 2. O próprio site (HTML) - identificado por mode === 'navigate'
+    const isCriticalUpdate = event.request.url.includes('flashcards.csv') || event.request.mode === 'navigate';
+
+    // ESTRATÉGIA A: Network First (Tenta Internet -> Atualiza Cache -> Se falhar, usa Cache)
+    if (isCriticalUpdate) {
         event.respondWith(
             fetch(event.request)
                 .then(response => {
-                    // Se deu certo (tem internet), retorna o arquivo novo E atualiza o cache
+                    // Se a internet funcionou, clonamos a resposta e salvamos no cache novo
                     const responseClone = response.clone();
                     caches.open(CACHE_NAME).then(cache => {
                         cache.put(event.request, responseClone);
@@ -52,25 +55,24 @@ self.addEventListener('fetch', event => {
                     return response;
                 })
                 .catch(() => {
-                    // Se deu erro (sem internet), tenta pegar o último salvo no cache
+                    // Se a internet falhou (OFFLINE), entregamos o que tem no cache
                     return caches.match(event.request).then(cachedResponse => {
                         if (cachedResponse) {
                             return cachedResponse;
                         }
-                        // Se não tem nem na rede nem no cache, retorna erro
-                        throw new Error('Sem internet e sem cache do CSV');
+                        // Se não tem nem na rede nem no cache (primeira vez sem net), erro.
+                        throw new Error('Você está offline e não há versão salva.');
                     });
                 })
         );
     }
 
-    // ESTRATÉGIA B: Para o HTML/CSS/Imagens (Cache First - Cache Primeiro)
-    // Isso faz o app carregar instantaneamente
+    // ESTRATÉGIA B: Cache First (Para Imagens, Ícones, CSS externos, Fontes)
+    // Carrega instantâneo do cache para performance
     else {
         event.respondWith(
             caches.match(event.request)
                 .then(response => {
-                    // Retorna do cache se existir, senão busca na rede
                     return response || fetch(event.request);
                 })
         );
