@@ -1,4 +1,3 @@
-
 # 🧠 Quiz da Família
 
 Um aplicativo de Quiz interativo, responsivo e instalável (PWA), projetado para gamificar o estudo em família ou reuniões sociais. O jogo transforma uma lista simples de perguntas em uma experiência visual de "Show do Milhão", compatível com celulares, tablets, PCs e Smart TVs.
@@ -79,3 +78,11 @@ O projeto utiliza tecnologias web modernas sem dependência de frameworks pesado
 ├── manifest.json    # Configurações de instalação do App
 └── flashcards.csv   # Banco de perguntas e respostas
 ```
+
+## 🤝 Contribuição
+
+Sinta-se à vontade para fazer um fork deste projeto e adicionar novos temas ou mecânicas de jogo!
+
+---
+
+Desenvolvido com 💜 por Maycow.
