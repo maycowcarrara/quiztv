@@ -20,25 +20,31 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, getDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         // Sua configuração do Firebase
         const firebaseConfig = {
-            apiKey: "AIzaSyACqeOYmLrH9mBQZubG4MvKz9QyO-8C7ng",
-            authDomain: "quiztv-59d84.firebaseapp.com",
-            projectId: "quiztv-59d84",
-            storageBucket: "quiztv-59d84.firebasestorage.app",
-            messagingSenderId: "507710075808",
-            appId: "1:507710075808:web:5803977c331483ae4a6ac5"
+            apiKey: "AIzaSyDm_RweYGA8KAGezvxL5yiHLokU4KQDleo",
+            authDomain: "quiztvfamilia.firebaseapp.com",
+            projectId: "quiztvfamilia",
+            storageBucket: "quiztvfamilia.firebasestorage.app",
+            messagingSenderId: "49654512893",
+            appId: "1:49654512893:web:497b9d7316c9e1a29d5294"
         };
 
         const app = initializeApp(firebaseConfig);
         window.db = getFirestore(app);
-        window.dbFunctions = { collection, addDoc, getDocs, getDoc, doc };
+        window.auth = getAuth(app);
+        window.authProvider = new GoogleAuthProvider();
+
+        // Expondo funções para o HTML
+        window.dbFunctions = { collection, addDoc, getDocs, deleteDoc, doc };
+        window.authFunctions = { signInWithPopup, signOut, onAuthStateChanged };
     </script>
 
     <style>
-        /* --- VARIÁVEIS BASE (Tema Claro/Padrão) --- */
+        /* --- VARIÁVEIS BASE --- */
         :root {
             --bg-grad: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
             --glass: rgba(255, 255, 255, 0.90);
@@ -51,7 +57,6 @@
             --btn-text: #fff;
             --focus-outline: 4px solid #ffeaa7;
             --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-            /* Sombra mais marcada para TV */
             --progress-bg: rgba(0, 0, 0, 0.1);
             --chip-bg: #fff;
             --chip-text: #2d3436;
@@ -60,17 +65,15 @@
             --input-text: #2d3436;
         }
 
-        /* TEMA 1: JUNGLE (Confortável) */
+        /* TEMAS */
         [data-theme="jungle"] {
             --bg-grad: linear-gradient(to bottom, #11998e, #38ef7d);
             --glass: rgba(240, 255, 240, 0.92);
             --primary: #d35400;
             --secondary: #27ae60;
             --text-main: #1a4d2e;
-            /* Verde bem escuro para contraste */
         }
 
-        /* TEMA 2: CYBER (Escuro - Ótimo para TV) */
         [data-theme="cyber"] {
             --bg-grad: linear-gradient(135deg, #1a1a1a, #000000);
             --glass: rgba(40, 40, 40, 0.95);
@@ -83,11 +86,9 @@
             --chip-text: #fff;
             --chip-border: #555;
             --input-bg: #444;
-            /* Input escuro para não ofuscar */
             --input-text: #fff;
         }
 
-        /* TEMA 3: OCEAN (Azul Profundo) */
         [data-theme="ocean"] {
             --bg-grad: linear-gradient(to top, #09203f 0%, #537895 100%);
             --glass: rgba(230, 245, 255, 0.92);
@@ -96,7 +97,6 @@
             --text-main: #001f3f;
         }
 
-        /* TEMA 4: ALTO CONTRASTE (Acessibilidade) */
         [data-theme="contrast"] {
             --bg-grad: #000;
             --glass: #000;
@@ -106,17 +106,14 @@
             --primary: #ff0000;
             --secondary: #ffff00;
             --btn-text: #000;
-            /* IMPORTANTE: Texto preto no botão amarelo */
             --chip-bg: #000;
             --chip-text: #fff;
             --chip-border: #fff;
             --input-bg: #222;
             --input-text: #fff;
             border: 1px solid #333;
-            /* Borda sutil nos containers */
         }
 
-        /* TEMA 5: SUNSET (Quente) */
         [data-theme="sunset"] {
             --bg-grad: linear-gradient(to right, #ff9966, #ff5e62);
             --glass: rgba(255, 245, 240, 0.95);
@@ -125,12 +122,10 @@
             --text-main: #4a1919;
         }
 
-        /* TEMA 6: COFFEE (Sépia/Leitura) */
         [data-theme="coffee"] {
             --bg-grad: linear-gradient(to right, #603813, #b29f94);
             --glass: rgba(250, 240, 230, 0.95);
             --card-bg: #fff8e1;
-            /* Papel antigo */
             --card-back-bg: #fff8e1;
             --primary: #d84315;
             --secondary: #795548;
@@ -147,7 +142,6 @@
             font-family: 'Quicksand', sans-serif;
             background: var(--bg-grad);
             color: var(--text-main);
-            /* CRUCIAL: Herança de cor para toda a UI */
             margin: 0;
             padding: 0;
             height: 100vh;
@@ -180,7 +174,6 @@
             font-weight: 900;
             pointer-events: auto;
             text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
-            /* Sombra suave no título */
         }
 
         .theme-bar {
@@ -246,7 +239,6 @@
             justify-content: center;
         }
 
-        /* INPUTS MELHORADOS */
         .input-group {
             background: rgba(0, 0, 0, 0.05);
             padding: 20px;
@@ -262,11 +254,9 @@
             padding: 10px;
             border-radius: 10px;
             border: 2px solid var(--primary);
-            /* Borda segue o tema */
             background: var(--input-bg);
             color: var(--input-text);
             width: 80%;
-            /* Mais largo */
             text-align: center;
             margin: 5px 0;
             transition: all 0.3s;
@@ -290,14 +280,11 @@
             text-transform: uppercase;
         }
 
-        /* CORREÇÃO AQUI: Botão de adicionar usa a cor do cartão para texto */
         .btn-add {
             background: var(--text-main);
             color: var(--card-bg);
-            /* Contraste Garantido */
         }
 
-        /* Ajuste específico para contrast */
         [data-theme="contrast"] .btn-add {
             background: #fff;
             color: #000;
@@ -308,6 +295,30 @@
             width: 80%;
             font-size: 1.4rem;
             margin-top: 20px;
+        }
+
+        .btn-save {
+            background: var(--text-main);
+            color: var(--card-bg);
+            font-size: 0.8rem;
+            padding: 8px 15px;
+            margin-bottom: 10px;
+            border: 1px solid var(--primary);
+            opacity: 0.8;
+        }
+
+        [data-theme="contrast"] .btn-save {
+            background: #fff;
+            color: #000;
+            border: 2px solid #000;
+        }
+
+        .btn-auth {
+            font-size: 0.8rem;
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            margin-top: 15px;
         }
 
         .btn-wrong {
@@ -328,7 +339,6 @@
             color: #fff;
         }
 
-        /* Ajuste de cor de texto para botões coloridos */
         [data-theme="contrast"] .btn-wrong,
         [data-theme="contrast"] .btn-partial,
         [data-theme="contrast"] .btn-correct {
@@ -433,7 +443,6 @@
             border: 4px solid var(--secondary);
         }
 
-        /* Ajuste borda Contrast */
         [data-theme="contrast"] .back {
             border: 4px solid var(--secondary);
             box-shadow: inset 0 0 0 2px #fff;
@@ -459,6 +468,7 @@
             font-weight: 700;
             width: 100%;
             word-wrap: break-word;
+            white-space: pre-wrap;
         }
 
         .label {
@@ -516,6 +526,26 @@
 
         .hidden {
             display: none !important;
+        }
+
+        .saved-game-item {
+            background: rgba(255, 255, 255, 0.5);
+            border: 2px dashed var(--primary);
+            padding: 10px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 300px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            margin-bottom: 10px;
+            color: var(--text-main);
+        }
+
+        .saved-game-info {
+            text-align: left;
+            font-size: 0.9rem;
         }
 
         @media (max-height: 600px) and (orientation: landscape) {
@@ -700,6 +730,15 @@
     </header>
 
     <div id="lobby" class="screen app-container" style="display:flex; flex-direction:column; gap:20px;">
+
+        <div id="saved-games-container" class="hidden"
+            style="width:100%; display:flex; flex-direction:column; align-items:center;">
+            <h3 style="color:var(--text-main); margin-bottom:5px;">Continuar Jogo:</h3>
+            <div id="saved-games-list" style="width:100%; display:flex; flex-direction:column; align-items:center;">
+            </div>
+            <hr style="width:50%; opacity:0.3; margin: 15px 0;">
+        </div>
+
         <h2 style="color:var(--primary); margin-top: 10px;">Escolha um Quiz</h2>
         <div id="quiz-list"
             style="width:100%; display:flex; flex-wrap:wrap; gap:10px; justify-content:center; overflow-y:auto; max-height: 40vh;">
@@ -707,12 +746,16 @@
 
         <hr style="width:50%; opacity:0.3; margin: 10px 0;">
 
-        <div class="input-group">
-            <h3>Criar Novo Quiz</h3>
+        <div id="admin-panel" class="hidden input-group" style="border: 2px dashed var(--primary);">
+            <h3>👑 Área do Administrador</h3>
             <input type="text" id="newQuizTitle" placeholder="Nome do Quiz (ex: Bíblico)">
             <input type="file" id="csvInput" accept=".csv">
             <button class="btn btn-add" onclick="uploadQuizToFirebase()">SALVAR NO BANCO</button>
+            <br>
+            <button class="btn btn-auth" onclick="logoutGoogle()">Sair do Admin</button>
         </div>
+
+        <button id="btn-login" class="btn btn-auth" onclick="loginGoogle()">Login Admin</button>
     </div>
 
     <div class="app-container hidden" id="main-game-container">
@@ -739,6 +782,10 @@
         </div>
 
         <div id="game" class="hidden screen game-screen">
+            <div style="width:100%; display:flex; justify-content:flex-end;">
+                <button class="btn btn-save" onclick="saveAndExit()">💾 SALVAR E SAIR</button>
+            </div>
+
             <div class="scene" id="sceneContainer" tabindex="0" onclick="flip()" onkeydown="handleCardKey(event)">
                 <div class="card" id="mainCard">
                     <div class="face front">
@@ -804,6 +851,10 @@
         function setTheme(t) { if (t) document.body.setAttribute('data-theme', t); else document.body.removeAttribute('data-theme') }
 
         let deck = [], players = [], turn = 0, isFlipped = false, totalStart = 0;
+        let currentQuizTitle = "Quiz";
+
+        // ⚠️⚠️ CONFIGURAÇÃO DO ADMIN ⚠️⚠️
+        const ADMIN_EMAIL = "maycowcarrara@gmail.com"; // SUBSTITUA PELO SEU EMAIL
 
         function adjustFontSize() {
             const texts = document.querySelectorAll('.big-text');
@@ -814,7 +865,123 @@
             });
         }
 
-        window.onload = function () { setTimeout(loadQuizList, 500); };
+        window.onload = function () {
+            setTimeout(() => {
+                loadSavedGames();
+                loadQuizList();
+                monitorAuth();
+            }, 500);
+        };
+
+        // --- SISTEMA DE AUTENTICAÇÃO ---
+
+        function loginGoogle() {
+            const { signInWithPopup } = window.authFunctions;
+            signInWithPopup(window.auth, window.authProvider)
+                .then(result => {
+                    console.log("Logado:", result.user.email);
+                })
+                .catch(error => {
+                    alert("Erro no login: " + error.message);
+                });
+        }
+
+        function logoutGoogle() {
+            window.authFunctions.signOut(window.auth).then(() => {
+                alert("Deslogado.");
+            });
+        }
+
+        function monitorAuth() {
+            const { onAuthStateChanged } = window.authFunctions;
+            onAuthStateChanged(window.auth, (user) => {
+                const adminPanel = document.getElementById('admin-panel');
+                const btnLogin = document.getElementById('btn-login');
+
+                if (user && user.email === ADMIN_EMAIL) {
+                    // É o Admin!
+                    adminPanel.classList.remove('hidden');
+                    btnLogin.classList.add('hidden');
+                } else {
+                    // Não é admin ou não tá logado
+                    adminPanel.classList.add('hidden');
+                    btnLogin.classList.remove('hidden');
+                }
+            });
+        }
+
+        // --- SISTEMA DE SAVE ---
+
+        async function saveAndExit() {
+            if (!confirm("Deseja salvar o progresso atual e voltar ao menu?")) return;
+            const { collection, addDoc } = window.dbFunctions;
+            try {
+                await addDoc(collection(window.db, "saved_games"), {
+                    title: currentQuizTitle,
+                    players: players, deck: deck, turn: turn, totalStart: totalStart, date: new Date()
+                });
+                alert("Jogo salvo!"); location.reload();
+            } catch (e) { console.error(e); alert("Erro ao salvar."); }
+        }
+
+        /* Substitua a função loadSavedGames inteira por esta: */
+
+        async function loadSavedGames() {
+            if (!window.dbFunctions) return;
+            const { collection, getDocs, deleteDoc, doc } = window.dbFunctions;
+            const container = document.getElementById('saved-games-container');
+            const listDiv = document.getElementById('saved-games-list');
+            listDiv.innerHTML = "";
+
+            try {
+                const querySnapshot = await getDocs(collection(window.db, "saved_games"));
+
+                if (!querySnapshot.empty) {
+                    container.classList.remove('hidden');
+
+                    querySnapshot.forEach((docSnapshot) => {
+                        const data = docSnapshot.data();
+                        const dateStr = data.date ? new Date(data.date.seconds * 1000).toLocaleDateString('pt-BR') : "";
+
+                        const div = document.createElement('div');
+                        div.className = 'saved-game-item';
+                        div.innerHTML = `
+                    <div class="saved-game-info">
+                        <strong>${data.title}</strong><br>
+                        <span style="font-size:0.8rem; opacity:0.7">📅 ${dateStr} | 🃏 ${data.deck.length} restantes</span>
+                    </div>
+                    <button class="btn" style="font-size:0.8rem; background:transparent; color:var(--text-main); border:1px solid var(--text-main)">▶ CONTINUAR</button>
+                `;
+
+                        // --- AQUI ESTAVA O ERRO ---
+                        div.onclick = async () => {
+                            deck = data.deck;
+                            players = data.players;
+                            turn = data.turn;
+                            totalStart = data.totalStart || data.deck.length;
+                            currentQuizTitle = data.title;
+
+                            // Apaga o save para não duplicar
+                            await deleteDoc(doc(window.db, "saved_games", docSnapshot.id));
+
+                            // Transição de telas CORRETA:
+                            document.getElementById('lobby').classList.add('hidden'); // Some lobby
+                            document.getElementById('main-game-container').classList.remove('hidden'); // Aparece container do jogo
+
+                            document.getElementById('setup').classList.add('hidden'); // <--- CORREÇÃO: Esconde o setup vazio
+                            document.getElementById('game').classList.remove('hidden'); // Mostra o jogo
+
+                            updateUI();
+                            loadCard();
+                        };
+
+                        listDiv.appendChild(div);
+                    });
+                }
+            } catch (e) {
+                console.error("Erro ao carregar saves:", e);
+            }
+        }
 
         async function loadQuizList() {
             if (!window.dbFunctions) return setTimeout(loadQuizList, 500);
@@ -828,17 +995,16 @@
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
                     const btn = document.createElement('button');
-                    btn.className = 'btn btn-start';
-                    btn.style.fontSize = '1rem'; btn.style.margin = '5px'; btn.style.width = 'auto';
+                    btn.className = 'btn btn-start'; btn.style.fontSize = '1rem'; btn.style.margin = '5px'; btn.style.width = 'auto';
                     btn.innerText = data.titulo || "Sem Nome";
-                    btn.onclick = () => selectQuiz(doc.id, data.perguntas);
+                    btn.onclick = () => selectQuiz(doc.id, data.perguntas, data.titulo);
                     listDiv.appendChild(btn);
                 });
             } catch (e) { console.error(e); listDiv.innerHTML = "Erro ao conectar no banco de dados."; }
         }
 
-        function selectQuiz(id, questions) {
-            deck = questions; totalStart = deck.length;
+        function selectQuiz(id, questions, title) {
+            deck = questions; totalStart = deck.length; currentQuizTitle = title || "Quiz";
             document.getElementById('lobby').classList.add('hidden');
             document.getElementById('main-game-container').classList.remove('hidden');
             document.getElementById('setup').classList.remove('hidden');
@@ -864,7 +1030,16 @@
             reader.readAsText(file);
         }
 
-        function parseCSV(t) { const r = []; let row = [], f = '', q = false; for (let i = 0; i < t.length; i++) { let c = t[i], n = t[i + 1]; if (c === '"') { if (q && n === '"') { f += '"'; i++ } else q = !q } else if (c === ',' && !q) { row.push(f); f = '' } else if ((c === '\n' || c === '\r') && !q) { if (f || row.length) row.push(f); if (row.length >= 2) r.push({ q: row[0], a: row[1] }); row = []; f = '' } else f += c } if (f || row.length) { row.push(f); if (row.length >= 2) r.push({ q: row[0], a: row[1] }) } return r }
+        function parseCSV(t) {
+            const r = []; let row = [], f = '', q = false;
+            for (let i = 0; i < t.length; i++) {
+                let c = t[i], n = t[i + 1];
+                if (c === '"') { if (q && n === '"') { f += '"'; i++ } else q = !q } else if (c === ',' && !q) { row.push(f); f = '' } else if ((c === '\n' || c === '\r') && !q) { if (f || row.length) row.push(f); processRow(row, r); row = []; f = '' } else f += c
+            }
+            if (f || row.length) { row.push(f); processRow(row, r); }
+            return r;
+        }
+        function processRow(row, r) { if (row.length < 2) return; if (row[0].trim().toLowerCase() === "pergunta") return; let p = row[0]; let resp = row[1]; if (row[3]) { resp += `\n\n(Ref: ${row[3]})`; } r.push({ q: p, a: resp }); }
 
         function addPlayer() { const e = document.getElementById('pName'), v = e.value.trim(); if (v) { players.push({ name: v, score: 0 }); e.value = ''; document.getElementById('player-list').innerHTML = players.map(p => `<span class="p-tag">👤 ${p.name}</span>`).join('') } }
 
