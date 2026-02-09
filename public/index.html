@@ -17,8 +17,28 @@
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
 
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap" rel="stylesheet">
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, getDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Sua configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyACqeOYmLrH9mBQZubG4MvKz9QyO-8C7ng",
+            authDomain: "quiztv-59d84.firebaseapp.com",
+            projectId: "quiztv-59d84",
+            storageBucket: "quiztv-59d84.firebasestorage.app",
+            messagingSenderId: "507710075808",
+            appId: "1:507710075808:web:5803977c331483ae4a6ac5"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        window.db = getFirestore(app);
+        window.dbFunctions = { collection, addDoc, getDocs, getDoc, doc };
+    </script>
+
     <style>
-        /* --- VARIÁVEIS --- */
+        /* --- VARIÁVEIS BASE (Tema Claro/Padrão) --- */
         :root {
             --bg-grad: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
             --glass: rgba(255, 255, 255, 0.90);
@@ -30,66 +50,91 @@
             --partial: #fbc531;
             --btn-text: #fff;
             --focus-outline: 4px solid #ffeaa7;
-            --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            /* Sombra mais marcada para TV */
             --progress-bg: rgba(0, 0, 0, 0.1);
             --chip-bg: #fff;
             --chip-text: #2d3436;
             --chip-border: #dfe6e9;
+            --input-bg: #fff;
+            --input-text: #2d3436;
         }
 
-        /* Temas simplificados para garantir contraste */
+        /* TEMA 1: JUNGLE (Confortável) */
         [data-theme="jungle"] {
             --bg-grad: linear-gradient(to bottom, #11998e, #38ef7d);
-            --glass: rgba(240, 255, 240, 0.95);
+            --glass: rgba(240, 255, 240, 0.92);
             --primary: #d35400;
             --secondary: #27ae60;
+            --text-main: #1a4d2e;
+            /* Verde bem escuro para contraste */
         }
 
+        /* TEMA 2: CYBER (Escuro - Ótimo para TV) */
         [data-theme="cyber"] {
-            --bg-grad: linear-gradient(135deg, #2d3436, #000000);
-            --glass: rgba(30, 30, 30, 0.95);
+            --bg-grad: linear-gradient(135deg, #1a1a1a, #000000);
+            --glass: rgba(40, 40, 40, 0.95);
             --card-bg: #2d3436;
+            --card-back-bg: #2d3436;
             --text-main: #dfe6e9;
             --primary: #e056fd;
             --secondary: #0984e3;
             --chip-bg: #2d3436;
             --chip-text: #fff;
             --chip-border: #555;
+            --input-bg: #444;
+            /* Input escuro para não ofuscar */
+            --input-text: #fff;
         }
 
+        /* TEMA 3: OCEAN (Azul Profundo) */
         [data-theme="ocean"] {
             --bg-grad: linear-gradient(to top, #09203f 0%, #537895 100%);
-            --glass: rgba(230, 245, 255, 0.95);
+            --glass: rgba(230, 245, 255, 0.92);
             --primary: #ff6b6b;
             --secondary: #0abde3;
+            --text-main: #001f3f;
         }
 
+        /* TEMA 4: ALTO CONTRASTE (Acessibilidade) */
         [data-theme="contrast"] {
             --bg-grad: #000;
-            --glass: #111;
+            --glass: #000;
             --card-bg: #000;
+            --card-back-bg: #000;
             --text-main: #fff;
             --primary: #ff0000;
             --secondary: #ffff00;
-            border: 2px solid white;
+            --btn-text: #000;
+            /* IMPORTANTE: Texto preto no botão amarelo */
             --chip-bg: #000;
             --chip-text: #fff;
             --chip-border: #fff;
+            --input-bg: #222;
+            --input-text: #fff;
+            border: 1px solid #333;
+            /* Borda sutil nos containers */
         }
 
+        /* TEMA 5: SUNSET (Quente) */
         [data-theme="sunset"] {
             --bg-grad: linear-gradient(to right, #ff9966, #ff5e62);
             --glass: rgba(255, 245, 240, 0.95);
             --primary: #c0392b;
             --secondary: #8e44ad;
+            --text-main: #4a1919;
         }
 
+        /* TEMA 6: COFFEE (Sépia/Leitura) */
         [data-theme="coffee"] {
             --bg-grad: linear-gradient(to right, #603813, #b29f94);
             --glass: rgba(250, 240, 230, 0.95);
             --card-bg: #fff8e1;
+            /* Papel antigo */
+            --card-back-bg: #fff8e1;
             --primary: #d84315;
             --secondary: #795548;
+            --text-main: #3e2723;
         }
 
         /* --- BASE --- */
@@ -101,6 +146,8 @@
         body {
             font-family: 'Quicksand', sans-serif;
             background: var(--bg-grad);
+            color: var(--text-main);
+            /* CRUCIAL: Herança de cor para toda a UI */
             margin: 0;
             padding: 0;
             height: 100vh;
@@ -112,7 +159,6 @@
             overflow: hidden;
         }
 
-        /* HEADER FLUTUANTE (Para economizar espaço) */
         header {
             position: absolute;
             top: 10px;
@@ -124,7 +170,6 @@
             padding: 0 15px;
             z-index: 100;
             pointer-events: none;
-            /* Deixa clicar através */
         }
 
         .main-title {
@@ -134,7 +179,8 @@
             text-transform: uppercase;
             font-weight: 900;
             pointer-events: auto;
-            text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.5);
+            text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
+            /* Sombra suave no título */
         }
 
         .theme-bar {
@@ -156,11 +202,9 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
-        /* CONTAINER PRINCIPAL */
         .app-container {
             width: 95%;
             max-width: 1200px;
-            /* Altura dinâmica com margens */
             height: 85vh;
             background: var(--glass);
             border-radius: 25px;
@@ -170,12 +214,10 @@
             flex-direction: column;
             align-items: center;
             position: relative;
-            transition: background 0.3s ease;
+            transition: background 0.3s ease, color 0.3s ease;
             margin-top: 30px;
-            /* Espaço pro header */
         }
 
-        /* FOCUS */
         :focus {
             outline: none;
         }
@@ -186,7 +228,6 @@
             transform: scale(1.02);
         }
 
-        /* TELAS */
         .screen {
             width: 100%;
             height: 100%;
@@ -205,7 +246,7 @@
             justify-content: center;
         }
 
-        /* ELEMENTOS UI */
+        /* INPUTS MELHORADOS */
         .input-group {
             background: rgba(0, 0, 0, 0.05);
             padding: 20px;
@@ -215,13 +256,25 @@
             text-align: center;
         }
 
-        input[type="text"] {
+        input[type="text"],
+        input[type="file"] {
             font-size: 1.2rem;
             padding: 10px;
             border-radius: 10px;
-            border: 2px solid #ccc;
-            width: 70%;
+            border: 2px solid var(--primary);
+            /* Borda segue o tema */
+            background: var(--input-bg);
+            color: var(--input-text);
+            width: 80%;
+            /* Mais largo */
             text-align: center;
+            margin: 5px 0;
+            transition: all 0.3s;
+        }
+
+        input::placeholder {
+            opacity: 0.6;
+            color: var(--input-text);
         }
 
         .btn {
@@ -237,9 +290,17 @@
             text-transform: uppercase;
         }
 
+        /* CORREÇÃO AQUI: Botão de adicionar usa a cor do cartão para texto */
         .btn-add {
             background: var(--text-main);
-            color: #fff;
+            color: var(--card-bg);
+            /* Contraste Garantido */
+        }
+
+        /* Ajuste específico para contrast */
+        [data-theme="contrast"] .btn-add {
+            background: #fff;
+            color: #000;
         }
 
         .btn-start {
@@ -249,10 +310,10 @@
             margin-top: 20px;
         }
 
-        /* BOTÕES DO JOGO (CORES FORTES) */
         .btn-wrong {
             background: #ff7675;
             flex: 1;
+            color: #fff;
         }
 
         .btn-partial {
@@ -264,9 +325,17 @@
         .btn-correct {
             background: #00cec9;
             flex: 1;
+            color: #fff;
         }
 
-        /* LISTA DE JOGADORES */
+        /* Ajuste de cor de texto para botões coloridos */
+        [data-theme="contrast"] .btn-wrong,
+        [data-theme="contrast"] .btn-partial,
+        [data-theme="contrast"] .btn-correct {
+            color: #000;
+            border: 1px solid #fff;
+        }
+
         #player-list {
             margin-top: 15px;
             display: flex;
@@ -277,19 +346,19 @@
 
         .p-tag {
             font-size: 1rem;
-            background: #fff;
+            background: var(--chip-bg);
             padding: 5px 15px;
             border-radius: 15px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            color: #333;
+            color: var(--chip-text);
+            border: 1px solid var(--chip-border);
         }
 
-        /* PLACAR */
         .scoreboard {
             display: flex;
             gap: 8px;
             padding: 5px;
-            background: rgba(0, 0, 0, 0.03);
+            background: rgba(0, 0, 0, 0.05);
             border-radius: 15px;
             margin-bottom: 10px;
             flex-wrap: wrap;
@@ -318,7 +387,6 @@
             z-index: 2;
         }
 
-        /* CENA 3D (O CARTÃO) */
         .scene {
             perspective: 1000px;
             width: 100%;
@@ -351,20 +419,24 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            /* RESPIRO: Margem interna grande */
             padding: 30px;
             box-sizing: border-box;
             text-align: center;
             background: var(--card-bg);
             color: var(--text-main);
             box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.05);
-            /* Borda interna sutil */
         }
 
         .back {
             transform: rotateY(180deg);
             background: var(--card-back-bg);
             border: 4px solid var(--secondary);
+        }
+
+        /* Ajuste borda Contrast */
+        [data-theme="contrast"] .back {
+            border: 4px solid var(--secondary);
+            box-shadow: inset 0 0 0 2px #fff;
         }
 
         .front {
@@ -379,7 +451,6 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            /* O JS cuida do tamanho, sem barra de rolagem */
         }
 
         .big-text {
@@ -399,7 +470,6 @@
             flex-shrink: 0;
         }
 
-        /* PAINEL DE CONTROLES */
         .game-panel {
             width: 100%;
             display: flex;
@@ -448,12 +518,7 @@
             display: none !important;
         }
 
-        /* --- MEDIA QUERIES (ADAPTAÇÃO) --- */
-
-        /* MODO PAISAGEM (CELULAR/TABLET PEQUENO) */
         @media (max-height: 600px) and (orientation: landscape) {
-
-            /* Header some pra dar espaço */
             .main-title {
                 display: none;
             }
@@ -467,15 +532,12 @@
             }
 
             .app-container {
-                /* Ocupa quase toda a tela, mas mantendo margens bonitas */
                 width: 98%;
                 height: 95vh;
                 margin-top: 0;
                 padding: 15px;
                 flex-direction: row;
-                /* Lado a lado */
                 gap: 20px;
-                /* Espaço entre cartão e botões */
             }
 
             .game-screen {
@@ -484,7 +546,6 @@
                 width: 100%;
             }
 
-            /* CARTÃO (Esquerda) */
             .scene {
                 width: 60%;
                 height: 100%;
@@ -496,9 +557,6 @@
                 padding: 20px 40px;
             }
 
-            /* Respiro lateral extra */
-
-            /* PAINEL (Direita) */
             .game-panel {
                 width: 40%;
                 justify-content: center;
@@ -506,7 +564,6 @@
                 padding: 0;
             }
 
-            /* Botões empilhados para não apertar */
             .controls {
                 flex-direction: column !important;
                 gap: 8px;
@@ -532,7 +589,6 @@
             }
         }
 
-        /* TABLET GRANDE / PC */
         @media (min-width: 768px) and (min-height: 601px) {
             .app-container {
                 width: 90%;
@@ -643,9 +699,25 @@
         </div>
     </header>
 
-    <div class="app-container">
+    <div id="lobby" class="screen app-container" style="display:flex; flex-direction:column; gap:20px;">
+        <h2 style="color:var(--primary); margin-top: 10px;">Escolha um Quiz</h2>
+        <div id="quiz-list"
+            style="width:100%; display:flex; flex-wrap:wrap; gap:10px; justify-content:center; overflow-y:auto; max-height: 40vh;">
+        </div>
+
+        <hr style="width:50%; opacity:0.3; margin: 10px 0;">
+
+        <div class="input-group">
+            <h3>Criar Novo Quiz</h3>
+            <input type="text" id="newQuizTitle" placeholder="Nome do Quiz (ex: Bíblico)">
+            <input type="file" id="csvInput" accept=".csv">
+            <button class="btn btn-add" onclick="uploadQuizToFirebase()">SALVAR NO BANCO</button>
+        </div>
+    </div>
+
+    <div class="app-container hidden" id="main-game-container">
         <div id="setup" class="screen setup-screen">
-            <div id="loading-msg" class="status-msg">🔄 Carregando perguntas...</div>
+            <div id="loading-msg" class="status-msg hidden">🔄 Carregando perguntas...</div>
             <div id="player-setup" class="hidden"
                 style="width: 100%; display:flex; flex-direction:column; align-items:center;">
                 <div class="input-group">
@@ -660,6 +732,9 @@
                 </div>
                 <button class="btn btn-start" onclick="startGame()">INICIAR</button>
                 <p style="margin-top:10px; opacity:0.6; font-size:0.9rem;">Cartas: <span id="card-count">0</span></p>
+                <button class="btn" onclick="location.reload()"
+                    style="font-size:0.8rem; margin-top:20px; background:#ddd; color:#333; border: 1px solid #ccc;">VOLTAR
+                    AO MENU</button>
             </div>
         </div>
 
@@ -730,60 +805,93 @@
 
         let deck = [], players = [], turn = 0, isFlipped = false, totalStart = 0;
 
-        // --- SCRIPT INTELIGENTE DE FONTE ---
         function adjustFontSize() {
             const texts = document.querySelectorAll('.big-text');
             texts.forEach(el => {
-                // Inicia grande
-                let size = 2.5;
-                el.style.fontSize = size + 'rem';
-
-                // Pega o container pai (.text-container)
+                let size = 2.5; el.style.fontSize = size + 'rem';
                 const container = el.parentElement;
-
-                // Enquanto a altura do texto for maior que o container... diminua!
-                // O loop para em 0.7rem para não ficar ilegível
-                while (el.scrollHeight > container.clientHeight && size > 0.7) {
-                    size -= 0.1;
-                    el.style.fontSize = size + 'rem';
-                }
+                while (el.scrollHeight > container.clientHeight && size > 0.7) { size -= 0.1; el.style.fontSize = size + 'rem'; }
             });
         }
 
-        window.onload = async function () { const m = document.getElementById('loading-msg'); try { const r = await fetch('flashcards.csv?v=' + new Date().getTime()); if (!r.ok) throw new Error("404"); const t = await r.text(); deck = parseCSV(t); if (deck.length > 0) { totalStart = deck.length; m.innerHTML = `<span class="success">✅ Pronto!</span>`; document.getElementById('player-setup').classList.remove('hidden'); document.getElementById('card-count').innerText = deck.length } else throw new Error("Vazio") } catch (e) { m.innerHTML = `<span class="error">❌ Erro</span><br><input type="file" onchange="manualLoad(this)">` } };
+        window.onload = function () { setTimeout(loadQuizList, 500); };
+
+        async function loadQuizList() {
+            if (!window.dbFunctions) return setTimeout(loadQuizList, 500);
+            const { collection, getDocs } = window.dbFunctions;
+            const listDiv = document.getElementById('quiz-list');
+            listDiv.innerHTML = "Carregando...";
+            try {
+                const querySnapshot = await getDocs(collection(window.db, "quizzes"));
+                listDiv.innerHTML = "";
+                if (querySnapshot.empty) { listDiv.innerHTML = "<p>Nenhum quiz encontrado.</p>"; }
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const btn = document.createElement('button');
+                    btn.className = 'btn btn-start';
+                    btn.style.fontSize = '1rem'; btn.style.margin = '5px'; btn.style.width = 'auto';
+                    btn.innerText = data.titulo || "Sem Nome";
+                    btn.onclick = () => selectQuiz(doc.id, data.perguntas);
+                    listDiv.appendChild(btn);
+                });
+            } catch (e) { console.error(e); listDiv.innerHTML = "Erro ao conectar no banco de dados."; }
+        }
+
+        function selectQuiz(id, questions) {
+            deck = questions; totalStart = deck.length;
+            document.getElementById('lobby').classList.add('hidden');
+            document.getElementById('main-game-container').classList.remove('hidden');
+            document.getElementById('setup').classList.remove('hidden');
+            document.getElementById('player-setup').classList.remove('hidden');
+            document.getElementById('card-count').innerText = deck.length;
+        }
+
+        async function uploadQuizToFirebase() {
+            const titleInput = document.getElementById('newQuizTitle');
+            const fileInput = document.getElementById('csvInput');
+            const file = fileInput.files[0];
+            if (!titleInput.value || !file) { alert("Preencha o nome e selecione um arquivo CSV."); return; }
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const text = e.target.result; const questions = parseCSV(text);
+                if (questions.length === 0) return alert("CSV vazio ou inválido");
+                const { collection, addDoc } = window.dbFunctions;
+                try {
+                    await addDoc(collection(window.db, "quizzes"), { titulo: titleInput.value, perguntas: questions, dataCriacao: new Date() });
+                    alert("Quiz salvo com sucesso!"); titleInput.value = ""; fileInput.value = ""; loadQuizList();
+                } catch (error) { console.error("Erro ao salvar: ", error); alert("Erro ao salvar no banco. Verifique o console."); }
+            };
+            reader.readAsText(file);
+        }
+
         function parseCSV(t) { const r = []; let row = [], f = '', q = false; for (let i = 0; i < t.length; i++) { let c = t[i], n = t[i + 1]; if (c === '"') { if (q && n === '"') { f += '"'; i++ } else q = !q } else if (c === ',' && !q) { row.push(f); f = '' } else if ((c === '\n' || c === '\r') && !q) { if (f || row.length) row.push(f); if (row.length >= 2) r.push({ q: row[0], a: row[1] }); row = []; f = '' } else f += c } if (f || row.length) { row.push(f); if (row.length >= 2) r.push({ q: row[0], a: row[1] }) } return r }
-        function manualLoad(i) { const f = i.files[0]; if (!f) return; const r = new FileReader(); r.onload = e => { deck = parseCSV(e.target.result); totalStart = deck.length; document.getElementById('loading-msg').innerText = "✅ Pronto!"; document.getElementById('player-setup').classList.remove('hidden') }; r.readAsText(f) }
+
         function addPlayer() { const e = document.getElementById('pName'), v = e.value.trim(); if (v) { players.push({ name: v, score: 0 }); e.value = ''; document.getElementById('player-list').innerHTML = players.map(p => `<span class="p-tag">👤 ${p.name}</span>`).join('') } }
-        function startGame() { if (!players.length) return alert("Add Jogadores"); for (let i = deck.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[deck[i], deck[j]] = [deck[j], deck[i]] } document.getElementById('setup').classList.add('hidden'); document.getElementById('game').classList.remove('hidden'); updateUI(); loadCard(); setTimeout(() => document.getElementById('sceneContainer').focus(), 500) }
+
+        function startGame() {
+            if (!players.length) return alert("Adicione pelo menos um jogador!");
+            for (let i = deck.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[deck[i], deck[j]] = [deck[j], deck[i]] }
+            document.getElementById('setup').classList.add('hidden');
+            document.getElementById('game').classList.remove('hidden');
+            updateUI(); loadCard(); setTimeout(() => document.getElementById('sceneContainer').focus(), 500)
+        }
+
         function updateUI() { document.getElementById('board').innerHTML = players.map((p, i) => `<div class="chip ${i === turn ? 'active' : ''}">${p.name}: ${p.score}</div>`).join(''); const rem = deck.length, pct = ((totalStart - rem) / totalStart) * 100; document.getElementById('progressBar').style.width = pct + "%"; document.getElementById('remainingCount').innerText = rem }
 
         function loadCard() {
             if (!deck.length) return endGame();
-            isFlipped = false;
-            document.getElementById('mainCard').classList.remove('flipped');
-            document.getElementById('actions').classList.add('hidden');
-
+            const mainCard = document.getElementById('mainCard');
+            const wasFlipped = mainCard.classList.contains('flipped');
+            isFlipped = false; mainCard.classList.remove('flipped'); document.getElementById('actions').classList.add('hidden');
             document.getElementById('qText').innerText = deck[0].q;
-            document.getElementById('aText').innerText = deck[0].a;
-
-            updateUI();
-            document.getElementById('sceneContainer').focus();
-
-            // Ajusta fonte
-            setTimeout(adjustFontSize, 50);
+            const aText = document.getElementById('aText');
+            if (wasFlipped) { aText.innerText = ""; setTimeout(() => { aText.innerText = deck[0].a; adjustFontSize(); }, 300); } else { aText.innerText = deck[0].a; }
+            updateUI(); document.getElementById('sceneContainer').focus(); setTimeout(adjustFontSize, 50);
         }
 
         function flip() {
-            const c = document.getElementById('mainCard');
-            isFlipped = !isFlipped;
-            if (isFlipped) {
-                c.classList.add('flipped');
-                document.getElementById('actions').classList.remove('hidden');
-                setTimeout(adjustFontSize, 50);
-            } else {
-                c.classList.remove('flipped');
-                document.getElementById('actions').classList.add('hidden');
-            }
+            const c = document.getElementById('mainCard'); isFlipped = !isFlipped;
+            if (isFlipped) { c.classList.add('flipped'); document.getElementById('actions').classList.remove('hidden'); setTimeout(adjustFontSize, 50); } else { c.classList.remove('flipped'); document.getElementById('actions').classList.add('hidden'); }
         }
 
         function handleCardKey(e) { if (e.key === 'Enter' || e.keyCode === 13) { e.preventDefault(); flip() } }
